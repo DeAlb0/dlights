@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="flashing ligths to acompany the music" />
+  <meta charset="utf-8">
+  <title>Lights & Colors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="DeAlb0">
+  <!-- link rel="stylesheet" href="css/style.css">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script -->
+
+
+<style>
+    .light {
+        border-radius : 50%;
+        width : 3vw;
+        height: 3vw;
+        position: absolute;
+        transition: 0.3s transform 0s;
+    }
+    .lights {
+        position: static;
+        display:block;
+        width : 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: black;
+    }
+    .light.lighton {
+        /*****
+        width : 20vw;
+        height: 20vw;
+        *********/
+        transform: scale(5);
+        transition: 0.1s transform 0s;
+    }
+    body {
+        background-color: black;
+    }
+
+</style>
+<script>
+
+const lightUpdateTime = 200
+const lcount = 12
+var cycle = 0
+var metacycle = 0
+var diva = []
+
+function lightUpdate() {
+    for ( i = 0 ; i < lcount ; i++) {
+        d = diva[i]
+//        let on = Math.max(((cycle - i) % lcount),((cycle - (lcount - i)) % lcount)) < (metacycle % lcount)
+        let on = ((cycle - i) % lcount) <= (metacycle % lcount) - 1  ^ ((cycle - (lcount - i - 1)) % lcount) <= (metacycle % lcount) - 1
+        diva[i].classList.toggle('lighton',on)
+        diva[i].style = `background-color: hsl(${(i % 6) * 60}deg 90% 50%)`
+        d.style.left = `${(i % (lcount/2)+ 0.3)/lcount*2*100}%`
+        d.style.top = `${(i < (lcount/2) ? 25 : 75 )}%`
+    }
+    cycle++
+    if ( cycle % lcount == 0 )metacycle++
+}
+function lights() {
+    for ( base of document.querySelectorAll('.lights')) {
+        for ( i = 0 ; i < lcount ; i++ ) {
+            ndiv = document.createElement('div')
+            ndiv.classList.add('light')
+            ndiv.classList.add('light'+i)
+            base.appendChild(ndiv)
+            diva.push(ndiv)
+        }
+    }
+    setInterval(lightUpdate,lightUpdateTime)
+}
+document.addEventListener("DOMContentLoaded", lights)
+
+</script>
+
+</head>
+
+<body>
+  
+<div class="lights">
+  
+</div>
+
+<script>
+</script>
+
+</body>
+</html>
