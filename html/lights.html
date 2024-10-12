@@ -18,7 +18,7 @@
         width : 3vw;
         height: 3vw;
         position: absolute;
-        transition: 0.3s transform 0s;
+        transition: 0.5s transform 0s;
     }
     .lights {
         position: static;
@@ -44,7 +44,9 @@
 <script>
 
 const lightUpdateTime = 200
-const lcount = 12
+const lrows = 3
+const lcols = 6
+const lcount = lrows * lcols
 var cycle = 0
 var metacycle = 0
 var diva = []
@@ -52,24 +54,29 @@ var diva = []
 function lightUpdate() {
     for ( i = 0 ; i < lcount ; i++) {
         d = diva[i]
+        let x = i % lcols
+        let y = Math.floor(i / lrows)
 //        let on = Math.max(((cycle - i) % lcount),((cycle - (lcount - i)) % lcount)) < (metacycle % lcount)
         let on = ((cycle - i) % lcount) <= (metacycle % lcount) - 1  ^ ((cycle - (lcount - i - 1)) % lcount) <= (metacycle % lcount) - 1
-        diva[i].classList.toggle('lighton',on)
-        diva[i].style = `background-color: hsl(${(i % 6) * 60}deg 90% 50%)`
-        d.style.left = `${(i % (lcount/2)+ 0.3)/lcount*2*100}%`
-        d.style.top = `${(i < (lcount/2) ? 25 : 75 )}%`
+        d.classList.toggle('lighton',on)
+        d.style.backgroundColor = `hsl(${(i % 6) * 60}deg 90% 50%)`
     }
     cycle++
     if ( cycle % lcount == 0 )metacycle++
 }
+
 function lights() {
     for ( base of document.querySelectorAll('.lights')) {
+        let lcols = base.getAttribute('columns') || 6
+        let lrows = base.getAttribute('rows') || 3
         for ( i = 0 ; i < lcount ; i++ ) {
             ndiv = document.createElement('div')
             ndiv.classList.add('light')
             ndiv.classList.add('light'+i)
             base.appendChild(ndiv)
             diva.push(ndiv)
+            ndiv.style.left = `${(i % lcols + 0.5)*100/lcols}%`
+            ndiv.style.top = `${(Math.floor(i/lcols)+0.5)*100/lrows}%`
         }
     }
     setInterval(lightUpdate,lightUpdateTime)
@@ -82,7 +89,7 @@ document.addEventListener("DOMContentLoaded", lights)
 
 <body>
   
-<div class="lights">
+<div class="lights" columns="6" xrows="3">
   
 </div>
 
