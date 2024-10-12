@@ -15,8 +15,10 @@
 <style>
     .light {
         border-radius : 50%;
-        width : 3vw;
-        height: 3vw;
+        width : 1px;
+        height: 1px;
+        left : 50%;
+        top : 50%;
         position: absolute;
         transition: 0.5s transform 0s;
     }
@@ -28,12 +30,17 @@
         overflow: hidden;
         background-color: black;
     }
+    .lightrect {
+        position:absolute;
+        overflow: hidden;
+        margin: 20px;
+    }
     .light.lighton {
         /*****
         width : 20vw;
         height: 20vw;
         *********/
-        transform: scale(5);
+        transform: scale(500);
         transition: 0.1s transform 0s;
     }
     body {
@@ -43,7 +50,7 @@
 </style>
 <script>
 
-const lightUpdateTime = 200
+var lightUpdateTime = 500
 const lrows = 3
 const lcols = 6
 const lcount = lrows * lcols
@@ -52,17 +59,32 @@ var metacycle = 0
 var diva = []
 
 function lightUpdate() {
+    let bunchx = 1
+    let groupx = 3
+    let bunchy = 1
+    let buncht = 1
+    let fx = 1
+    let fy = 0
     for ( i = 0 ; i < lcount ; i++) {
         d = diva[i]
         let x = i % lcols
-        let y = Math.floor(i / lrows)
+        let y = Math.floor(i / lcols)
 //        let on = Math.max(((cycle - i) % lcount),((cycle - (lcount - i)) % lcount)) < (metacycle % lcount)
-        let on = ((cycle - i) % lcount) <= (metacycle % lcount) - 1  ^ ((cycle - (lcount - i - 1)) % lcount) <= (metacycle % lcount) - 1
+        // let on = ((cycle - i) % lcount) <= (metacycle % lcount) - 1  ^ ((cycle - (lcount - i - 1)) % lcount) <= (metacycle % lcount) - 1
+        let pos = fx * Math.floor(x/bunchx) + fy * Math.floor(y/bunchy)
+        let max = fx*Math.floor(lcols/bunchx)+fy*Math.floor(lrows/bunchy)
+        // on = (pos < max) && (pos + group > max)
+        let on = ( Math.floor(cycle/buncht) - pos + max) % max < groupx
+        let hue = ((Math.floor(cycle/buncht) - pos + cycle + max) * 360 / max )% (360)
+        // d.innerText = "hue " + hue
         d.classList.toggle('lighton',on)
-        d.style.backgroundColor = `hsl(${(i % 6) * 60}deg 90% 50%)`
+        // d.style.backgroundColor = `hsl(${(i % 6) * 60}deg 90% 50%)`
+        d.style.backgroundColor = `hsl(${hue}deg 90% 50%)`
     }
     cycle++
     if ( cycle % lcount == 0 )metacycle++
+    setTimeout(lightUpdate,lightUpdateTime)
+    // if ( lightUpdateTime > 200 )    lightUpdateTime /= 1.1 
 }
 
 function lights() {
@@ -70,18 +92,41 @@ function lights() {
         let lcols = base.getAttribute('columns') || 6
         let lrows = base.getAttribute('rows') || 3
         for ( i = 0 ; i < lcount ; i++ ) {
-            ndiv = document.createElement('div')
+            let ndiv = document.createElement('div')
+            let ndivrect = document.createElement('div')
             ndiv.classList.add('light')
+            ndivrect.classList.add('lightrect')
             ndiv.classList.add('light'+i)
-            base.appendChild(ndiv)
+            base.appendChild(ndivrect)
+            ndivrect.appendChild(ndiv)
             diva.push(ndiv)
-            ndiv.style.left = `${(i % lcols + 0.5)*100/lcols}%`
-            ndiv.style.top = `${(Math.floor(i/lcols)+0.5)*100/lrows}%`
+            // ndiv.style.left = `${(i % lcols + 0.5)*100/lcols}%`
+            // ndiv.style.top = `${(Math.floor(i/lcols)+0.5)*100/lrows}%`
+            ndivrect.style.left = `${(i % lcols)*100/lcols}%`
+            ndivrect.style.top = `${(Math.floor(i/lcols))*100/lrows}%`
+            ndivrect.style.width = `${100/lcols-1}%`
+            ndivrect.style.height = `${100/lrows-1}%`
         }
     }
-    setInterval(lightUpdate,lightUpdateTime)
+    setTimeout(lightUpdate,lightUpdateTime)
 }
 document.addEventListener("DOMContentLoaded", lights)
+
+var lastx = null
+var lasty = null
+
+function mmove(event) {
+    y = event.y
+    x = event.x
+    if ( lastx === null ) {
+        lastx = x
+        lasty = y
+    } else {
+        let xdiff = x - lastx 
+        lightUpdateTime = Math.max(50,xdiff + 500)
+    }
+} 
+addEventListener("mousemove", mmove);
 
 </script>
 
