@@ -103,6 +103,13 @@ function metacycleNext() {
 
 function lightUpdate() {
     [fx, fy, tmode, xmod, bunchx, groupx, bunchy, buncht ] = params
+    if ( fy === 0 && fx === 0 ) {
+        fx = 1
+        // bunchx = 4
+    }
+    if ( bunchy > 1 ) {
+        fy = 1
+    }
 
     let max = fx*Math.floor(lcols/bunchx)+fy*Math.floor(lrows/bunchy) + groupx
         // on = (pos < max) && (pos + group > max)
@@ -115,7 +122,7 @@ function lightUpdate() {
         // let on = ((cycle - i) % lcount) <= (metacycle % lcount) - 1  ^ ((cycle - (lcount - i - 1)) % lcount) <= (metacycle % lcount) - 1
         let pos = fx * Math.floor(x/bunchx) + fy * Math.floor(y/bunchy)
         // let on = ( tval - pos + max) % max < groupx
-        let diffval = tval - mody(pos,max/(xmod+1),xmod)
+        let diffval = tval - mody(pos,max/(tmode+1),xmod)
         let on = diffval < groupx && diffval >= 0
         let hue = mody(cycle/4 + y/2,max*4,0) * 120
         // hue = 0
