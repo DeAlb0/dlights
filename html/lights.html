@@ -56,7 +56,7 @@
 </style>
 <script>
 
-var lightUpdateTime = 500
+var lightUpdateTime = 200
 const lrows = 4
 const lcols = 8
 const lcount = lrows * lcols
@@ -75,33 +75,38 @@ function mody(x,l,mode) {
 }
 
 
-const paramsDefault = Array.of(1,0,1,1,1,1,1,1,1,1,1,1)
+const paramsDefault = Array.of(0,0,0,0,1,1,1,1)
 var params = Array.from(paramsDefault)
 
-var paraChanges = [0,0,0]
+var paraChanges = [undefined,0,0]
 
 function metacycleNext() {
     let pi = 0
     let i = paraChanges[pi]
-    params[i] = paramsDefault[i]
-    i++
-    if ( i >= params.length ) {
+    if ( i === undefined ) {
         i = 0
+        params[i] = paramsDefault[i]+1
+    } else {
+        params[i] = paramsDefault[i]
+        i++
+        if ( i >= params.length ) {
+            i = 0
+        }
+        params[i] = paramsDefault[i]+1
     }
-    params[i] = paramsDefault[i]+1
     paraChanges[pi] = i
     let div = document.querySelector('.paraminfo')
     if ( div !== null ) {
-        div.innerText = i
+        div.innerText = `${i} : ${params}`
     }
 }
 
 function lightUpdate() {
-    [fx, fy, bunchx, groupx, bunchy, buncht, tmode ] = params
+    [fx, fy, tmode, xmod, bunchx, groupx, bunchy, buncht ] = params
 
     let max = fx*Math.floor(lcols/bunchx)+fy*Math.floor(lrows/bunchy) + groupx
         // on = (pos < max) && (pos + group > max)
-    let tval = mody(cycle/buncht,max/tmode,tmode)
+    let tval = mody(cycle/buncht,max/(tmode+1),tmode)
     for ( i = 0 ; i < lcount ; i++) {
         d = diva[i]
         let x = i % lcols
@@ -110,7 +115,7 @@ function lightUpdate() {
         // let on = ((cycle - i) % lcount) <= (metacycle % lcount) - 1  ^ ((cycle - (lcount - i - 1)) % lcount) <= (metacycle % lcount) - 1
         let pos = fx * Math.floor(x/bunchx) + fy * Math.floor(y/bunchy)
         // let on = ( tval - pos + max) % max < groupx
-        let diffval = tval - mody(pos,max/2,1)
+        let diffval = tval - mody(pos,max/(xmod+1),xmod)
         let on = diffval < groupx && diffval >= 0
         let hue = mody(cycle/4 + y/2,max*4,0) * 120
         // hue = 0
