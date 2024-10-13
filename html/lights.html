@@ -35,6 +35,11 @@
         overflow: hidden;
         margin: 20px;
     }
+    .light:not(.lighton) {
+        /** turn afterflow off */
+        background-color :hsl(0deg 90% 0%) !important;
+    }
+
     .light.lighton {
         /*****
         width : 20vw;
@@ -51,20 +56,41 @@
 <script>
 
 var lightUpdateTime = 500
-const lrows = 3
-const lcols = 6
+const lrows = 4
+const lcols = 8
 const lcount = lrows * lcols
 var cycle = 0
 var metacycle = 0
 var diva = []
 
-function lightUpdate() {
-    let bunchx = 1
-    let groupx = 3
+
+function mody(x,l,mode) {
+    let period = l
+    if ( mode === 1 ) {
+        period = 2 * period - 2
+    }
+    const res = Math.abs(((Math.floor(x)+period)%period)-(mode*(l-1)))
+    return res
+}
+
+let bunchx = 1
+    let groupx = 1
     let bunchy = 1
     let buncht = 1
+    let tmode = 1
     let fx = 1
     let fy = 0
+
+cparameters = [
+    { name: tmode, min: 0, max: 1},
+    { name : bunchx, min : 0, max : 2}
+]
+
+
+function lightUpdate() {
+    let max = fx*Math.floor(lcols/bunchx)+fy*Math.floor(lrows/bunchy) + groupx
+        // on = (pos < max) && (pos + group > max)
+    let tval = mody(cycle/buncht,max/2,tmode)
     for ( i = 0 ; i < lcount ; i++) {
         d = diva[i]
         let x = i % lcols
@@ -72,10 +98,11 @@ function lightUpdate() {
 //        let on = Math.max(((cycle - i) % lcount),((cycle - (lcount - i)) % lcount)) < (metacycle % lcount)
         // let on = ((cycle - i) % lcount) <= (metacycle % lcount) - 1  ^ ((cycle - (lcount - i - 1)) % lcount) <= (metacycle % lcount) - 1
         let pos = fx * Math.floor(x/bunchx) + fy * Math.floor(y/bunchy)
-        let max = fx*Math.floor(lcols/bunchx)+fy*Math.floor(lrows/bunchy)
-        // on = (pos < max) && (pos + group > max)
-        let on = ( Math.floor(cycle/buncht) - pos + max) % max < groupx
-        let hue = ((Math.floor(cycle/buncht) - pos + cycle + max) * 360 / max )% (360)
+        // let on = ( tval - pos + max) % max < groupx
+        let diffval = tval - mody(pos,max/2,1)
+        let on = diffval < groupx && diffval >= 0
+        let hue = mody(cycle/4 + y/2,max*4,0) * 120
+        // hue = 0
         // d.innerText = "hue " + hue
         d.classList.toggle('lighton',on)
         // d.style.backgroundColor = `hsl(${(i % 6) * 60}deg 90% 50%)`
@@ -87,10 +114,13 @@ function lightUpdate() {
     // if ( lightUpdateTime > 200 )    lightUpdateTime /= 1.1 
 }
 
+// TODO: fix with consistent columns and t row handling
+const lcols2 = lcols
+const lrows2 = lrows
 function lights() {
     for ( base of document.querySelectorAll('.lights')) {
-        let lcols = base.getAttribute('columns') || 6
-        let lrows = base.getAttribute('rows') || 3
+        let lcols = base.getAttribute('columns') || lcols2
+        let lrows = base.getAttribute('rows') || lrows2
         for ( i = 0 ; i < lcount ; i++ ) {
             let ndiv = document.createElement('div')
             let ndivrect = document.createElement('div')
@@ -110,7 +140,7 @@ function lights() {
     }
     setTimeout(lightUpdate,lightUpdateTime)
 }
-document.addEventListener("DOMContentLoaded", lights)
+document.addEventListener("DOMContentLoaded", lights) 
 
 var lastx = null
 var lasty = null
@@ -124,6 +154,7 @@ function mmove(event) {
     } else {
         let xdiff = x - lastx 
         lightUpdateTime = Math.max(50,xdiff + 500)
+        lastx = x - (lightUpdateTime - 500)
     }
 } 
 addEventListener("mousemove", mmove);
@@ -134,7 +165,7 @@ addEventListener("mousemove", mmove);
 
 <body>
   
-<div class="lights" columns="6" xrows="3">
+<div class="lights">
   
 </div>
 
