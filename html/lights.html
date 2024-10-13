@@ -51,6 +51,7 @@
     body {
         background-color: black;
     }
+    .paraminfo { color : red }
 
 </style>
 <script>
@@ -73,24 +74,34 @@ function mody(x,l,mode) {
     return res
 }
 
-let bunchx = 1
-    let groupx = 1
-    let bunchy = 1
-    let buncht = 1
-    let tmode = 1
-    let fx = 1
-    let fy = 0
 
-cparameters = [
-    { name: tmode, min: 0, max: 1},
-    { name : bunchx, min : 0, max : 2}
-]
+const paramsDefault = Array.of(1,0,1,1,1,1,1,1,1,1,1,1)
+var params = Array.from(paramsDefault)
 
+var paraChanges = [0,0,0]
+
+function metacycleNext() {
+    let pi = 0
+    let i = paraChanges[pi]
+    params[i] = paramsDefault[i]
+    i++
+    if ( i >= params.length ) {
+        i = 0
+    }
+    params[i] = paramsDefault[i]+1
+    paraChanges[pi] = i
+    let div = document.querySelector('.paraminfo')
+    if ( div !== null ) {
+        div.innerText = i
+    }
+}
 
 function lightUpdate() {
+    [fx, fy, bunchx, groupx, bunchy, buncht, tmode ] = params
+
     let max = fx*Math.floor(lcols/bunchx)+fy*Math.floor(lrows/bunchy) + groupx
         // on = (pos < max) && (pos + group > max)
-    let tval = mody(cycle/buncht,max/2,tmode)
+    let tval = mody(cycle/buncht,max/tmode,tmode)
     for ( i = 0 ; i < lcount ; i++) {
         d = diva[i]
         let x = i % lcols
@@ -109,7 +120,10 @@ function lightUpdate() {
         d.style.backgroundColor = `hsl(${hue}deg 90% 50%)`
     }
     cycle++
-    if ( cycle % lcount == 0 )metacycle++
+    if ( cycle % (1 * lcount) == 0 ) {
+        metacycle++
+        metacycleNext()
+    }
     setTimeout(lightUpdate,lightUpdateTime)
     // if ( lightUpdateTime > 200 )    lightUpdateTime /= 1.1 
 }
@@ -164,7 +178,8 @@ addEventListener("mousemove", mmove);
 </head>
 
 <body>
-  
+
+<div class="paraminfo"></div>
 <div class="lights">
   
 </div>
