@@ -129,28 +129,29 @@ function idiv(a,b) {
 
 
 function mode2light(mode,extpos,l,t) {
-    let [parts,sym,tscaler] = mode
+    let [parts,blocks,sym,tscaler] = mode
     // let res = Math.abs((t%l-extpos%l))
-    let pos = extpos
-    let tsteps = parts
+    let opos = extpos
+    let tsteps = idiv(blocks,parts)
     if ( sym === 0 ) {
-        pos = Math.abs(pos-(l-1)/2)
-        tsteps = idiv(parts,2)
+        opos = Math.abs(opos-(l-1)/2)
+        tsteps = idiv(tsteps,2)
     }
     let partwidth = idiv(l,parts)
-    let mypart = idiv(pos,partwidth)
-    res = ( mypart - idiv(t,tscaler) % tsteps ) % Math.abs(tsteps)
-    if ( parts === 1 ) {
+    let ppos = opos % partwidth
+    const blockwidth = idiv(l,blocks)
+    let myblock = idiv(ppos,blockwidth)
+    res = ( myblock - idiv(t,tscaler) % tsteps ) % tsteps
+    if ( blocks === 1 ) {
         res += idiv(t,tscaler*4) % 4
     }
-
     // let insidepos = pos - mypart*partwidth
     return res
 }
 
-var xmode = [8,1,-2]
-var ymode = [4,0,16]
-var cmode = [4,1,4]
+var xmode = [2,8,0,-2]
+var ymode = [2,4,1,1]
+var cmode = [1,4,1,4]
 
 function lightUpdate() {
 //    let tval = mody(cycle/buncht,max/(tmode+1),tmode)
