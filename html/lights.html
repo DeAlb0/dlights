@@ -37,7 +37,7 @@
     }
     .light:not(.lighton) {
         /** turn afterflow off */
-        background-color :hsl(0deg 90% 0%) !important;
+        background-color :hsl(0deg 90% 00%) !important;
     }
 
     .light.lighton {
@@ -80,6 +80,28 @@ var params = Array.from(paramsDefault)
 
 var paraChanges = [undefined,0,0]
 
+function metacycleNextold() {
+    let pi = 0
+    let i = paraChanges[pi]
+    if ( i === undefined ) {
+        i = 0
+        params[i] = paramsDefault[i]+1
+    } else {
+        params[i] = paramsDefault[i]
+        i++
+        if ( i >= params.length ) {
+            i = 0
+        }
+        params[i] = paramsDefault[i]+1
+    }
+    paraChanges[pi] = i
+    let div = document.querySelector('.paraminfo')
+    if ( div !== null ) {
+        div.innerText = `${i} : ${params}`
+    }
+}
+
+
 function metacycleNext() {
     let pi = 0
     let i = paraChanges[pi]
@@ -101,7 +123,57 @@ function metacycleNext() {
     }
 }
 
+function idiv(a,b) {
+    return Math.floor(a/b)
+}
+
+
+function mode2light(mode,extpos,l,t) {
+    let [parts,sym,tscaler] = mode
+    // let res = Math.abs((t%l-extpos%l))
+    let pos = extpos
+    let tsteps = parts
+    if ( sym === 0 ) {
+        pos = Math.abs(pos-(l-1)/2)
+        tsteps = idiv(parts,2)
+    }
+    let partwidth = idiv(l,parts)
+    let mypart = idiv(pos,partwidth)
+    res = ( mypart - idiv(t,tscaler) % tsteps ) % Math.abs(tsteps)
+    if ( parts === 1 ) {
+        res += idiv(t,tscaler*4) % 4
+    }
+
+    // let insidepos = pos - mypart*partwidth
+    return res
+}
+
+var xmode = [8,1,-2]
+var ymode = [4,0,16]
+var cmode = [4,1,4]
+
 function lightUpdate() {
+//    let tval = mody(cycle/buncht,max/(tmode+1),tmode)
+    for ( i = 0 ; i < lcount ; i++) {
+        d = diva[i]
+        let x = i % lcols
+        let y = Math.floor(i / lcols)
+        let on = mode2light(xmode,x,lcols,cycle) === 0 && mode2light(ymode,y,lrows,cycle) === 0
+        let hue = mode2light(cmode,x,lcols,cycle) * 120
+        d.classList.toggle('lighton',on)
+        d.style.backgroundColor = `hsl(${hue}deg 90% 50%)`
+    }
+    cycle++
+    if ( cycle % (1 * lcount) == 0 ) {
+        metacycle++
+        // metacycleNext()
+    }
+    setTimeout(lightUpdate,lightUpdateTime)
+    // if ( lightUpdateTime > 200 )    lightUpdateTime /= 1.1 
+}
+
+
+function lightUpdateold() {
     [fx, fy, tmode, xmod, bunchx, groupx, bunchy, buncht ] = params
     if ( fy === 0 && fx === 0 ) {
         fx = 1
