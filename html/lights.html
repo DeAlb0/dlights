@@ -122,7 +122,7 @@ function mode2light(mode,extpos,l,t) {
     let tsteps = idiv(blocks,parts)
     if ( sym === 0 ) {
         opos = Math.abs(opos-(l-1)/2)
-        tsteps = idiv(tsteps,2)
+        // tsteps = idiv(tsteps,2)
     }
     tsteps += lin ? bulk : 0
     let partwidth = idiv(l,parts)
@@ -149,7 +149,20 @@ var cxmode = [1,4,1,2,1]
 var cymode = [1,4,1,3,1]
 
 metamodes = [
-    [ [1,8,1,1,1,1], [],            [1,2,0,2,1], [1,1,1,3,1] ],
+    [ [1,8,1,1,1,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],
+    [ [2,8,0,1,1,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],
+    [ [1,8,1,1,3,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],
+    [ [1,2,1,99,3,1], [1,4,1,1,1,1], [1,2,1,2,1,1], [1,4,1,3,1] ],
+    [ [1,8,1,1,2,1], [1,4,1,2,2,1], [1,4,1,6,2,1], [1,1,1,3,3,1] ],
+    [ [1,8,1,1,4,1], [1,4,1,3,2,1], [1,4,1,2,1], [1,4,1,3,1] ],
+    [ [1,8,1,1,3,1], [1,4,1,3,2,1], [1,4,1,2,1], [1,4,1,3,1] ],
+    [ [1,8,1,1,2,1], [1,4,1,3,2,1], [1,4,1,2,1], [1,4,1,3,1] ],
+]
+
+metamodes_alt = [
+    [ [1,8,1,1,1,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],
+    [ [2,8,0,1,1,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],
+    [ [1,8,1,1,1,1], [],            [1,2,1,2,1,1], [1,1,1,3,1] ],
     [ [1,8,1,1,2,1], [],            [1,1,1,2,1], [1,1,1,3,1] ],
     [ [1,8,1,1,2,1], [],            [1,2,0,2,1,1], [1,1,1,3,1] ],
     [ [1,2,1,99,3,1], [1,4,1,1,1,1], [1,2,1,2,1,1], [1,4,1,3,1] ],
@@ -179,7 +192,7 @@ function lightUpdate() {
         let x = i % lcols
         let y = Math.floor(i / lcols)
         let on = mode2light(xmode,x,lcols,cycle) <= 0 || mode2light(ymode,y,lrows,cycle) <= 0
-        let hue = ( mode2light(cxmode,x,lcols,cycle) + mode2light(cymode,y,lrows,cycle) ) * 60 % 360
+        let hue = ( mode2light(cxmode,x,lcols,cycle) + mode2light(cymode,y,lrows,cycle) ) * 120 % 360
         d.classList.toggle('lighton',on)
         d.style.backgroundColor = `hsl(${hue}deg 90% 50%)`
     }
