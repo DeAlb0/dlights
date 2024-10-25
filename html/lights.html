@@ -128,7 +128,7 @@ function mode2light(mode,extpos,l,t) {
     tsteps += lin ? bulk : 0
     let partwidth = idiv(l,parts)
     let ppos = opos % partwidth
-    const blockwidth = idiv(l,blocks)
+    const blockwidth = Math.max(idiv(l,blocks),0.5)
     let myblock = idiv(ppos,blockwidth)
     let dist = Math.abs(myblock - idiv(t,tscaler) % tsteps + (bulk+1)/2)
     let res = dist
@@ -152,6 +152,7 @@ var cymode = [1,4,1,3,1]
 metamodes = [
     [ [2,16,0,1,2,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],
     [ [1,2,1,99,3,1], [1,8,1,1,2,1], [1,2,1,2,1,1], [1,4,1,3,1] ],
+    [ [1,8,1,1,1,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],    
     [ [2,8,0,1,1,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],
     [ [1,8,1,1,3,1], [],            [1,4,1,24,1,1], [1,1,1,3,1] ],
     [ [1,2,1,99,3,1], [1,4,1,1,1,1], [1,2,1,2,1,1], [1,4,1,3,1] ],
