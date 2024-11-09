@@ -10,25 +10,28 @@
 <script>
   const animl = `
     background-color : lightcoral; height:0px->70% ;width:0px->70%;left: 50%->15%;top: 50%->15%;
-    background-color : aqua->green->blue->red->blue->green
+    2 background-color : aqua->green->blue->red->blue->green
     border-left-color,border-right-color : 3x red->green->blue
+    border-left-color : grey
     `
     function dlog(text) {
-      document.querySelector('div').innerText += text
+      document.querySelector('.log').innerText += text
     }
 
     function animlParse(spec) {
+    let reltime = 0  
+    propvals = new Map()
     for ( line of spec.split("\n") ) {
       if ( /^\s*$/.test(line) ) continue
       prefix = /^\s*(\d+)\b/
       let duration = 1
-      if ( pre = prefix.test(line) ) {
+      if ( pre = line.match(prefix) ) {
         duration = parseFloat(pre[1])
         line = line.replace(prefix,'')
       }
-      propvals = []
+      let nextstep = reltime + duration
       for ( field of line.split(';')) {
-        if ( field)
+        if ( /^\s*$/.test(field) ) continue
         [prop,val] = field.split(':')
         if ( val === undefined ) {
           console.warn(`animl:warn: no value for property ${prop}`)
@@ -36,26 +39,53 @@
         }
         const multire = /\s*(\d+)\s*x\s*/
         let multi = 1
-        if ( multim = multire.test(val) ) {
+        if ( multim = val.match(multire) ) {
           multi = parseFloat(multim[1])
           val = val.replace(multire,'')
         }
-        vcount = 0
+        let relreltime = reltime
+        let vcount = 0
         for ( value of val.split('->')) {
-          if ( propvals[vcount] === undefined ) propvals[vcount] = ""
+          // if ( propvals[vcount] === undefined ) propvals[vcount] = ""
           for ( sprop of prop.split(',' )) {
-            propvals[vcount] += sprop + ":"+value + ","
+            let key = `${relreltime} ${multi} ${duration}`
+            propvals[key] = (propvals[key] ?? "") + sprop + ":"+value + ";"
           }
+          relreltime += duration
           vcount++
         }
+        relreltime += vcount * duration * (multi-1)
+        //  dlog(`multi = ${multi}`)
+        if ( relreltime > nextstep ) nextstep = relreltime
       }
-      combined = propvals.join('\n')
-      dlog(combined)
-      console.log(propvals)
+      reltime = nextstep
+      // combined = propvals.join('\n')
     }
+    dlog(JSON.stringify(propvals,false," "))
+      console.log(propvals)
+    let keyframe = ""
+    for ( stepkey in propvals ) {
+      dlog(`stepkey = ${stepkey}\n`)
+      let [relpos,multi,dur] = stepkey.split(' ')
+      relpos = parseFloat(relpos)
+      multi = parseInt(multi)
+      dur = parseFloat(dur)
+      keyframe += [...Array(5).keys()].map(i=>`${((relpos+(i*dur*multi))/reltime*100).toFixed(2)}%`).join(',')
+      keyframe += `{${propvals[stepkey]}}\n`
+    }
+    dlog ( keyframe )
+    document.querySelector('#autogenstyle').innerHTML = `
+    :root {
+       --autogenlen: ${reltime}s;
+    }
+    @keyframes divany {
+      ${keyframe}
+    }    
+    `
   }
   document.addEventListener("DOMContentLoaded",x=> animlParse(animl))
 </script>  
+<style id="autogenstyle"></style>
 <style>
    @keyframes divanyx {
         0% { background-color : lightcoral; height:0px;width:0px;left: 50%;top: 50%;}
@@ -89,22 +119,16 @@
         90% { border-left-width: 15vh; border-right-width: 15vh; border-top-width: 70vh; border-bottom-width: 70vh; left: 35vh ; top: -20vh}
     } 
     div {
-        animation: divany 200s infinite 0s;
-        width: 70%;
-        height: 70%;
-        background-color: green;
+        animation: divany var(--autogenlen) infinite 0s;
         position: absolute;
         animation-composition: replace;
-        border: 35% solid blue;
-        font-family: 'Courier New', Courier, monospace;
-        color: black;
     }
+    .log { color : white; font-family: 'Courier New', Courier, monospace; }
     body { background-color: black;}
-
-
 </style>
 <body>
 <div></div>
+<div class="log"></div>
 </body>
 
 </html>
