@@ -9,10 +9,18 @@
   <meta name="author" content="DeAlb0">
 <script>
   const animl = `
-    background-color : lightcoral; height:0px->70% ;width:0px->70%;left: 50%->15%;top: 50%->15%;
-    2 background-color : aqua->green->blue->red->blue->green
-    border-left-color,border-right-color : 3x red->green->blue
+    background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
+    # 2 background-color : aqua->green->blue->red->blue->green
+    border-color: blue;width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 100vh; top: 0
+    1 border-right-color : 2x ->red->green->blue
+    4 border-right-color : ->yellow
+    # | 
+    left: -->0
+    0.5 border-left-color: +0.25 15 x red->blue->green ; border-right-color: 15 x blue->green->red; background-color : 8 x grey -> black; opacity: +0.25 20 x 100%->50%; left: 10x 0vw->12vw->24vw->36vw->48vw
+    left: 3x 0vw->12vw->24vw->36vw->48vw
+    # border-left-color,border-right-color : 3x red->green->blue
     border-left-color : grey
+    0.001 height: 70% ;width: 70%;left: 15%;top: 15%;border-left-width, border-right-width: 30vw;width:10vw; height : 100vh; top: 0
     `
     function dlog(text) {
       document.querySelector('.log').innerText += text
@@ -21,9 +29,11 @@
     function animlParse(spec) {
     let reltime = 0  
     propvals = new Map()
+    lastval = new Map()
     for ( line of spec.split("\n") ) {
-      if ( /^\s*$/.test(line) ) continue
-      prefix = /^\s*(\d+)\b/
+      line = line.replace(/#.*/,'')
+      if ( /^\s*(#.*)?$/.test(line) ) continue
+      prefix = /^\s*([\d.]+)\b/
       let duration = 1
       if ( pre = line.match(prefix) ) {
         duration = parseFloat(pre[1])
@@ -37,19 +47,37 @@
           console.warn(`animl:warn: no value for property ${prop}`)
           continue
         }
+        let offset = 0
+        if ( match = val.match(/\+([\d.]+)/) ) {
+          offset = parseFloat(match[1])
+          val = val.replace(/\+([\d.]+)/,'')
+        }
         const multire = /\s*(\d+)\s*x\s*/
         let multi = 1
         if ( multim = val.match(multire) ) {
           multi = parseFloat(multim[1])
           val = val.replace(multire,'')
         }
-        let relreltime = reltime
+        let relreltime = reltime + offset
         let vcount = 0
-        for ( value of val.split('->')) {
+        let valcount = val.split('->').length
+        for ( value1 of val.split('->')) {
           // if ( propvals[vcount] === undefined ) propvals[vcount] = ""
+          value = value1.replace(/-$/,'')
+          const stepwise = +(value === value1)
           for ( sprop of prop.split(',' )) {
-            let key = `${relreltime} ${multi} ${duration}`
+            const propname = sprop.replace(/\s/g,'')
+            if ( /^\s*$/.test(value) ) {
+              if ( lastval[propname] !== undefined ) {
+                value = lastval[propname]
+              } else {
+                value = val.split('->')[1]
+              }
+              valcount--
+            }
+            let key = `${relreltime} ${multi} ${duration} ${valcount} ${stepwise}`
             propvals[key] = (propvals[key] ?? "") + sprop + ":"+value + ";"
+            lastval[sprop] = value
           }
           relreltime += duration
           vcount++
@@ -61,17 +89,18 @@
       reltime = nextstep
       // combined = propvals.join('\n')
     }
-    dlog(JSON.stringify(propvals,false," "))
+    //dlog(JSON.stringify(propvals,false," "))
       console.log(propvals)
     let keyframe = ""
     for ( stepkey in propvals ) {
-      dlog(`stepkey = ${stepkey}\n`)
-      let [relpos,multi,dur] = stepkey.split(' ')
-      relpos = parseFloat(relpos)
-      multi = parseInt(multi)
-      dur = parseFloat(dur)
-      keyframe += [...Array(5).keys()].map(i=>`${((relpos+(i*dur*multi))/reltime*100).toFixed(2)}%`).join(',')
+      // dlog(`stepkey = ${stepkey}\n`)
+      const [relpos,multi,dur,steps,stepwise] = stepkey.split(' ').map(x=>parseFloat(x))
+      keyframe += [...Array(multi).keys()].map(i=>`${((relpos+(i*dur*steps))/reltime*100).toFixed(2)}%`).join(',')
       keyframe += `{${propvals[stepkey]}}\n`
+      if ( stepwise ) {
+        keyframe += [...Array(multi).keys()].map(i=>`${((relpos+(i*dur*steps+dur))/reltime*100-0.01).toFixed(2)}%`).join(',')
+        keyframe += `{${propvals[stepkey]}}\n`
+      }
     }
     dlog ( keyframe )
     document.querySelector('#autogenstyle').innerHTML = `
@@ -118,17 +147,18 @@
         89% { width, height : 0}
         90% { border-left-width: 15vh; border-right-width: 15vh; border-top-width: 70vh; border-bottom-width: 70vh; left: 35vh ; top: -20vh}
     } 
-    div {
+    .animate {
         animation: divany var(--autogenlen) infinite 0s;
         position: absolute;
         animation-composition: replace;
+        border: solid blue 0px;
     }
     .log { color : white; font-family: 'Courier New', Courier, monospace; }
     body { background-color: black;}
 </style>
 <body>
-<div></div>
-<div class="log"></div>
+  <pre class="log"></pre>
+  <div class="animate"></div>
 </body>
 
 </html>
