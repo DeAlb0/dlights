@@ -11,11 +11,11 @@
   const animl = `
     background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
     # 2 background-color : aqua->green->blue->red->blue->green
-    border-color: blue;width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0
-    1 border-right-color : 2x ->red->green->blue
-    1 border-right-color : ->yellow
+    border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0
+    1 border-right-color : 2x red->green->blue
+    1 border-right-color : yellow
     # | 
-    left: -->0
+    left: -->0; border-left-width, border-right-width: 30vw-->12vw; width ->12vw
     0.5 border-left-color: +0.25 15 x red->blue->green ; border-right-color: 15 x blue->green->red; background-color : 8 x grey -> black; opacity: +0.25 20 x 100%->50%; left: 10x 0vw->12vw->24vw->36vw->48vw
     left: 3x 0vw->12vw->24vw->36vw->48vw
     # border-left-color,border-right-color : 3x red->green->blue
@@ -23,7 +23,7 @@
     0.001 height: 70% ;width: 70%;left: 15%;top: 15%;border-left-width, border-right-width: 30vw;width:10vw; height : 100vh; top: 0
     `
     function dlog(text) {
-      document.querySelector('.log').innerText += text
+      document.querySelector('.log').innerText += text + "\n"
     }
 
     function animlParse(spec) {
@@ -61,11 +61,15 @@
         let relreltime = reltime + offset
         let vcount = 0
         let valcount = val.split('->').length
+        let stepwise = 1
         for ( value1 of val.split('->')) {
           let currentmulti = multi
           // if ( propvals[vcount] === undefined ) propvals[vcount] = ""
           value = value1.replace(/-$/,'')
-          const stepwise = +(value === value1)
+          if ( valcount > 0 && vcount < valcount - 1 ) {
+            stepwise = +(value === value1)
+            dlog(`stepwise(${value1},${vcount}/${valcount}) = ${stepwise}   for ${prop}  ` + value1 )
+          }
           for ( sprop of prop.replace(/\s+/g,'').split(',')) {
             if ( /^\s*$/.test(value) ) {
               // dlog(`checking lastval[${sprop}] = ${lastval[sprop]}\n`)
@@ -84,7 +88,7 @@
           relreltime += duration
           vcount++
         }
-        relreltime += vcount * duration * (multi-1)
+        relreltime += ( vcount * (multi-1) - 1 ) * duration
         //  dlog(`multi = ${multi}`)
         if ( relreltime > nextstep ) nextstep = relreltime
       }
