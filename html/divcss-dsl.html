@@ -9,14 +9,36 @@
   <meta name="author" content="DeAlb0">
 <script>
   const animl = `
+    2 background-color : red; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
+    2 border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
+    # 1 border-right-color : 1x red->green->blue
+    # 1 border-right-color : yellow
+    # | 
+    1 height:70vh ; left: 15vw;top: 15vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: blue; width:10vw;border-left-width, border-right-width: 30vw;
+    2 background-color : -->green; height:70vh ; left: -->0vw;top: 15vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: green; width:-->100vw;border-left-width, border-right-width: -->0vw;
+    3 left: -->0;width -->100vw; top:-->0; border-top-width, border-bottom-width: -->25vh;height:-->0;width:100vw
+    # 4 background-color : -->green; height:-->0vh ; left: -->0;top: -->0vh; border-top-width, border-bottom-width: -->25vh; border-left-color, border-right-color: -->green; width:100vw;border-left-width, border-right-width: -->0; height : 0
+
+    # width: 100vw;border-left-width, border-right-width: 0vw; height : 70vh-->0vh; top: 15vh-->0;border-top-width, border-bottom-width: 25vh
+    opacity : 90%
+    # top: 0; border-top-width, border-bottom-width: 0-->12vw; height: 0-->25vh; width: ->0;left: 0;border-left-width, border-right-width: 0 
+    0.5 top: 4 x 0vw->calc(i/4 * 100vh);border-top-color: 6 x red->green->blue;border-bottom-color: 6 x blue->red->green
+    top: ->0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0
+    # 0.5 top: 4 x 0vw->calc(1 * 100vh / 4)->calc(2 * 100vh / 4)->calc(3 * 100vh / 4)->calc(4 * 100vh / 4);border-top-color: 8 x red->green->blue;border-bottom-color: 8 x blue->red->green
+    `
+    dummy = `
     background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
     # 2 background-color : aqua->green->blue->red->blue->green
     border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0; 
     # 1 border-right-color : 1x red->green->blue
     # 1 border-right-color : yellow
     # | 
+    opacity : 90%
     top: 0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0 
-    0.5 top: 4 x 0vw->calc(1 * 100vh / 4)->calc(2 * 100vh / 4)->calc(3 * 100vh / 4)->calc(4 * 100vh / 4);border-top-color: 8 x red->green->blue;border-bottom-color: 8 x blue->red->green
+    0.5 top: 4 x calc(i/4 * 100vh);border-top-color: 5 x red->green->blue;border-bottom-color: 5 x blue->red->green
+    top: 0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0 
+    # 0.5 top: 4 x 0vw->calc(1 * 100vh / 4)->calc(2 * 100vh / 4)->calc(3 * 100vh / 4)->calc(4 * 100vh / 4);border-top-color: 8 x red->green->blue;border-bottom-color: 8 x blue->red->green
+    #######################
     top: 0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0
     top: 0; border-top-width, border-bottom-width: 0; border-left-width, border-right-width: 12vw
     background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
@@ -34,6 +56,21 @@
     `
     function dlog(text) {
       document.querySelector('.log').innerText += text + "\n"
+    }
+
+    function val2arr(text) {
+      let result= []
+      for ( value1s of val.split('->')) {
+        if ( m = value1s.match(/i\/(\d+)/) ) {
+          for ( let i = 0 ; i < parseInt(m[1]) ; i++ ) {
+             result.push(value1s.replace(/\bi\b/,i))
+          }
+        } else {
+          result.push(value1s)
+        }
+      }
+      // dlog(`val2arr(${text}) = ${JSON.stringify(result)}`)
+      return result
     }
 
     function animlParse(spec) {
@@ -69,16 +106,17 @@
           val = val.replace(multire,'')
         }
         let relreltime = reltime + offset
+        let values = val2arr(val)
+        let valcount = values.length
         let vcount = 0
-        let valcount = val.split('->').length
         let stepwise = 1
-        for ( value1 of val.split('->')) {
+        for ( value1 of values ) {
           let currentmulti = multi
           // if ( propvals[vcount] === undefined ) propvals[vcount] = ""
           value = value1.replace(/-$/,'')
           if ( valcount > 0 && vcount < valcount - 1 ) {
             stepwise = +(value === value1)
-            dlog(`stepwise(${value1},${vcount}/${valcount}) = ${stepwise}   for ${prop}  ` + value1 )
+            // dlog(`stepwise(${value1},${vcount}/${valcount}) = ${stepwise}   for ${prop}  ` + value1 )
           }
           for ( sprop of prop.replace(/\s+/g,'').split(',')) {
             if ( /^\s*$/.test(value) ) {
