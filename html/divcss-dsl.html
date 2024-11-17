@@ -11,11 +11,21 @@
   const animl = `
     background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
     # 2 background-color : aqua->green->blue->red->blue->green
-    border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0
-    1 border-right-color : 2x red->green->blue
-    1 border-right-color : yellow
+    border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0; 
+    # 1 border-right-color : 1x red->green->blue
+    # 1 border-right-color : yellow
     # | 
-    left: -->0; border-left-width, border-right-width: 30vw-->12vw; width ->12vw
+    top: 0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0 
+    0.5 top: 4 x 0vw->calc(1 * 100vh / 4)->calc(2 * 100vh / 4)->calc(3 * 100vh / 4)->calc(4 * 100vh / 4);border-top-color: 8 x red->green->blue;border-bottom-color: 8 x blue->red->green
+    top: 0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0
+    top: 0; border-top-width, border-bottom-width: 0; border-left-width, border-right-width: 12vw
+    background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
+    border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0; 
+
+    left: -->0; border-left-width, border-right-width: 30vw-->12vw; width: ->0
+    0.5 left: 4x 0vw->calc(1 * 100vw / 8)->calc(2*100vw/8)->calc(3 * 100vw / 8)->calc(4 * 100vw / 8)->calc(5 * 100vw / 8)->calc(6 * 100vw / 8);border-right-color: 15 x blue->green->red;border-left-color: 15 x red->blue->green;
+    left: 0; border-left-width, border-right-width: 12vw; width: 0
+
     0.5 border-left-color: +0.25 15 x red->blue->green ; border-right-color: 15 x blue->green->red; background-color : 8 x grey -> black; opacity: +0.25 20 x 100%->50%; left: 10x 0vw->12vw->24vw->36vw->48vw
     left: 3x 0vw->12vw->24vw->36vw->48vw
     # border-left-color,border-right-color : 3x red->green->blue
@@ -126,37 +136,6 @@
 </script>  
 <style id="autogenstyle"></style>
 <style>
-   @keyframes divanyx {
-        0% { background-color : lightcoral; height:0px;width:0px;left: 50%;top: 50%;}
-        1% { background-color : lightcoral; height:70%;width:70%;left: 15%;top: 15%;}
-        2% { background-color: aqua;} 
-        3% { background-color: green;} 
-        4% { background-color: blue;} 
-        5% { background-color: red;}
-        5.01% { background-color: blue;}
-        5.5% { background-color: blue;}
-        5.51% { background-color: green;}
-        6% { background-color: green;}
-        6.01% { background-color: red;}
-        6.5% { background-color: red;height:70%;width:70%;left: 15vh;top: 15%; border-width: 0; border-width-left: 35vh; border-width-right: 35vh; }
-        8% { background-color: red;height:0%;width:0%;left: 15vh;top: 15%; border-style: solid;border-color:black;border-width: 35vh; border-left-color: blue;border-right-color: blue;}
-        8.01% { border-left-color: blue;border-right-color: blue;}
-        8.5% { border-left-color: green;border-right-color: green;}
-        8.51% { border-left-color: green;border-right-color: green;}
-        9% { border-left-color: red;border-right-color:red;border-width: 35vh; }
-        9% { border-left-width: 15vh; border-right-width: 15vh; border-top-width: 70vh; border-bottom-width: 70vh; left: 35vh ; top: -20vh}
-        9.5% { border-left-color:red;border-right-color:red;} 
-        9.51% { border-left-color: blue;border-right-color:blue;} 
-        10% { border-left-color: blue;border-right-color:blue;} 
-        11.01% { transform: rotate(0deg) }
-        12.0% { transform: rotate(720deg) }
-        13.0% { transform: rotate(0deg) }
-        12% { border-radius: 50% }
-        6%,4%,2%,13%,15% { border-radius: 0% }
-        5%,3%,14%,16% { border-radius: 100% }
-        89% { width, height : 0}
-        90% { border-left-width: 15vh; border-right-width: 15vh; border-top-width: 70vh; border-bottom-width: 70vh; left: 35vh ; top: -20vh}
-    } 
     .animate {
         animation: divany var(--autogenlen) infinite 0s;
         position: absolute;
