@@ -11,12 +11,19 @@
   const animl = `
     2 background-color : red; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
     2 border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
+    border-width: ->20vh; border-color: ->blue;width:->0;height:->0;left,top:->30%
+    height,width: 4 x calc((i/4+0)*50%);left,top : 4 x calc(30% - i/4*20%);border-color: 3 x green->blue->red
+    border-width: 20vh; border-color: blue;width:0;height:0;left:30%;top:30%
+
+    # 0.5 border-left-color: +0.25 15 x red->blue->green ; border-right-color: 15 x blue->green->red; background-color : 8 x grey -> black; 
+    
     # 1 border-right-color : 1x red->green->blue
     # 1 border-right-color : yellow
     # | 
     1 height:70vh ; left: 15vw;top: 15vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: blue; width:10vw;border-left-width, border-right-width: 30vw;
     2 background-color : -->green; height:70vh ; left: -->0vw;top: 15vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: green; width:-->100vw;border-left-width, border-right-width: -->0vw;
     3 left: -->0;width -->100vw; top:-->0; border-top-width, border-bottom-width: -->25vh;height:-->0;width:100vw
+
     # 4 background-color : -->green; height:-->0vh ; left: -->0;top: -->0vh; border-top-width, border-bottom-width: -->25vh; border-left-color, border-right-color: -->green; width:100vw;border-left-width, border-right-width: -->0; height : 0
 
     # width: 100vw;border-left-width, border-right-width: 0vw; height : 70vh-->0vh; top: 15vh-->0;border-top-width, border-bottom-width: 25vh
