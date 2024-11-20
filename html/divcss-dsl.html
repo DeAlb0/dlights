@@ -9,20 +9,25 @@
   <meta name="author" content="DeAlb0">
 <script>
   const animl = `
-    2 background-color : red; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
-    2 border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
-    # border-width: 0->20vh; border-color: ->blue;width:->0;height:->0;left,top:->30%
-    # height,width: 4 x calc((i/4+0)*50%);left,top : 4 x calc(30% - i/4*20%);border-color: 0 x green->blue->red;background-color: 0 x red->green->blue
-    # border-width: 20vh; border-color: blue;width:0;height:0;left:30%;top:30%
-    # 2 border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
+  1 background-color : red; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
+  1 border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
+  border-top-width, border-bottom-width: 0-->70%-->0%;height -->0
+     4 top:-->0%; left: -->40%;top:-->5%;height: -->0%; width: ->0%;border-left-color, border-right-color: -->black;border-left-width, border-right-width: -->10vw; border-top-width, border-bottom-width: -->45vh; border-top-color: ->green;,border-bottom-color:->blue
+     0.1 left: ->40%;top:-->5%;height: ->0%; width: ->0%;border-left-color, border-right-color: -->black;border-left-width, border-right-width: -->10vw; border-top-width, border-bottom-width: -->45vh; border-top-color: ->green;,border-bottom-color:->blue
+        0.2 rotate: 0deg-->calc(i/64*4*720deg)->0deg;height:0 x calc(i/8*15%)->calc((8-i/8)*15%)
 
-    # 0.5 border-left-color: +0.25 15 x red->blue->green ; border-right-color: 15 x blue->green->red; background-color : 8 x grey -> black; 
-    
-    # 1 border-right-color : 1x red->green->blue
-    # 1 border-right-color : yellow
-    # | 
-    1 height:100vh ; left: 15vw;top: 0vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: blue; width:10vw;border-left-width, border-right-width: 30vw;
-    1 background-color : -->green; height:100vh ; left: -->0vw;top: 0vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: -->green; width:-->100vw;border-left-width, border-right-width: -->0vw;
+  # border-width: 0->20vh; border-color: ->blue;width:->0;height:->0;left,top:->30%
+  # height,width: 4 x calc((i/4+0)*50%);left,top : 4 x calc(30% - i/4*20%);border-color: 0 x green->blue->red;background-color: 0 x red->green->blue
+  # border-width: 20vh; border-color: blue;width:0;height:0;left:30%;top:30%
+  # 2 border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
+
+  # 0.5 border-left-color: +0.25 15 x red->blue->green ; border-right-color: 15 x blue->green->red; background-color : 8 x grey -> black; 
+  
+  # 1 border-right-color : 1x red->green->blue
+  # 1 border-right-color : yellow
+  # | 
+  1 height:100vh ; left: 15vw;top: 0vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: blue; width:10vw;border-left-width, border-right-width: 30vw;
+      1 background-color : -->green; height:100vh ; left: -->0vw;top: 0vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: -->green; width:-->100vw;border-left-width, border-right-width: -->0vw;
     3 left: -->0;width -->100vw; top:-->0; border-top-width, border-bottom-width: -->25vh;height:-->0;width:100vw
 
     # 4 background-color : -->green; height:-->0vh ; left: -->0;top: -->0vh; border-top-width, border-bottom-width: -->25vh; border-left-color, border-right-color: -->green; width:100vw;border-left-width, border-right-width: -->0; height : 0
@@ -34,6 +39,7 @@
     top: ->0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0
     # 0.5 top: 4 x 0vw->calc(1 * 100vh / 4)->calc(2 * 100vh / 4)->calc(3 * 100vh / 4)->calc(4 * 100vh / 4);border-top-color: 8 x red->green->blue;border-bottom-color: 8 x blue->red->green
     `
+
     dummy = `
     background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
     # 2 background-color : aqua->green->blue->red->blue->green
@@ -81,13 +87,8 @@
       return result
     }
 
-    function animlParse(spec) {
-    let reltime = 0  
-    propvals = new Map()
-    lastval = new Map()
-    for ( line of spec.split("\n") ) {
-      line = line.replace(/#.*/,'')
-      if ( /^\s*(#.*)?$/.test(line) ) continue
+  function animlParse(spec) {
+    function animline(line) {
       prefix = /^\s*([\d.]+)\b/
       let duration = 1
       if ( pre = line.match(prefix) ) {
@@ -157,33 +158,55 @@
       reltime = nextstep
       // combined = propvals.join('\n')
     }
-    dlog(JSON.stringify(propvals,false," "))
-      console.log(propvals)
-    let keyframe = ""
-    for ( stepkey in propvals ) {
-      // dlog(`stepkey = ${stepkey}\n`)
-      const [relpos,multi,dur,steps,stepwise] = stepkey.split(' ').map(x=>parseFloat(x))
-      if ( stepwise ) {
-        keyframe += [...Array(multi).keys()].map(i=>`${((relpos+(i*dur*steps))/reltime*100).toFixed(2)}%`).join(',')
-        keyframe += `{${propvals[stepkey]}}\n`
-      }
-      keyframe += [...Array(multi).keys()].map(i=>`${((relpos+(i*dur*steps+dur))/reltime*100-0.01).toFixed(2)}%`).join(',')
+  let reltime = 0  
+  propvals = new Map()
+  lastval = new Map()
+  linestack = []
+  let lastlinelvl = undefined
+  let lele = {lvl:999}
+  for ( line of spec.split("\n") ) {
+    line = line.replace(/#.*/,'')
+    if ( /^\s*(#.*)?$/.test(line) ) continue
+    let linelvl = line.match(/^ */)[0].length
+    if ( linelvl > lele.lvl ) {
+       linestack.push(lele)
+    } else if ( linestack.at(-1) !== undefined && linelvl <= linestack.at(-1).lvl ) {
+        let lele = linestack.pop()
+        animline(lele.line)
+    }
+    lele = { lvl: linelvl, line:line}
+    animline(line)
+  }
+  for ( ele of linestack.reverse() ) {
+    animline(ele.line)
+  }
+  dlog(JSON.stringify(propvals,false," "))
+    console.log(propvals)
+  let keyframe = ""
+  for ( stepkey in propvals ) {
+    // dlog(`stepkey = ${stepkey}\n`)
+    const [relpos,multi,dur,steps,stepwise] = stepkey.split(' ').map(x=>parseFloat(x))
+    if ( stepwise ) {
+      keyframe += [...Array(multi).keys()].map(i=>`${((relpos+(i*dur*steps))/reltime*100).toFixed(2)}%`).join(',')
       keyframe += `{${propvals[stepkey]}}\n`
     }
-    dlog ( keyframe )
-    document.querySelector('#autogenstyle').innerHTML = `
-    :root {
-       --autogenlen: ${reltime}s;
-    }
-    @keyframes divany {
-      ${keyframe}
-    }    
-    `
+    keyframe += [...Array(multi).keys()].map(i=>`${((relpos+(i*dur*steps+dur))/reltime*100-0.01).toFixed(2)}%`).join(',')
+    keyframe += `{${propvals[stepkey]}}\n`
   }
-  document.addEventListener("DOMContentLoaded",x=> animlParse(animl))
-  document.addEventListener("click", function() {
-    document.querySelector('.animatable').classList.toggle('animate')
-  })
+  dlog ( keyframe )
+  document.querySelector('#autogenstyle').innerHTML = `
+  :root {
+      --autogenlen: ${reltime}s;
+  }
+  @keyframes divany {
+    ${keyframe}
+  }    
+  `
+}
+document.addEventListener("DOMContentLoaded",x=> animlParse(animl))
+document.addEventListener("click", function() {
+  document.querySelector('.animatable').classList.toggle('animate')
+})
 
 </script>  
 <style id="autogenstyle"></style>
