@@ -26,7 +26,7 @@
   # 3 rotate: calc(4 * 360deg)
   # 3 rotate: unset
   1 top:-->5%; left: -->0%;height: -->50%; width: ->100%;border-left-width, border-right-width: -->0; border-top-width, border-bottom-width: -->0
-  2 top:25%; left: 0%;height: 50%; width: 100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->green;border-bottom-color:->lila
+  * 2 top:25%; left: 0%;height: 50%; width: 100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->green;border-bottom-color:->lila
   # * 2 top:-->5%; left: -->0%;height: -->50%; width: ->100%
   1 background-color: 4 x red->pink->yellow->lightgreen->orange; top: 0 x calc(i/3 * 75%)
   1 top:-->5%; left: -->0%;height: -->50%; width: ->100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->red;border-bottom-color:->yellow
@@ -146,14 +146,15 @@ class specLine {
 
   function animlParse(spec) {
     lastval = {}
-    let tmaxscaler = 1, tscaler = 1
+    let tscaler = 1, tmaxscaler = 1
 
     function animline(line) {
       const cline = new specLine(line)
-      let tscaler  = cline.processPattern(/\*(-|\d*)\s+/,1,10)
+      tscaler  = cline.processPattern(/\*(-|\d*)\s+/,tscaler,10)
       let duration = cline.processPattern(/([\d\.]+)\b/,1)
       tmaxscaler = Math.max(tmaxscaler,tscaler)
       duration *= tscaler
+      tscaler = (tscaler + 1) / 2
       let lastcount = 1
       let nextstep = reltime + duration
       for ( field of cline.remainder.split(';')) {
