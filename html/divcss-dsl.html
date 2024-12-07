@@ -10,14 +10,14 @@
 <script>
   const animl = `
   1 background-color : blue; height,width:0-->40vh;left:0;top:0 ; border-radius:50% # ;left: 50%-->40%;top: 50%-->40%;
-        # 0.15 left: 5 x calc(i/9*90vw)->calc((1 - i/9)*90vw) ; top: 0 x 0->calc(i/7*90vh)->calc((1 - i/7)*90vh); background-color: 0 x blue->blue->green->green->red
-  # 1 border-radius: 0 # ;background-color: black
+        0.15 left: 5 x calc(i/9*90vw)->calc((1 - i/9)*90vw) ; top: 0 x 0->calc(i/7*90vh)->calc((1 - i/7)*90vh); background-color: 0 x blue->blue->green->green->red
+  * 1 border-radius: 0 # ;background-color: black
   1 border-radius: -->0;background-color : ->red; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
   2 border-left-color, border-right-color: blue; width:70vw-->20vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
       0.5 border-left-color: 2 x red->blue->green; border-right-color: 0 x blue->green->red; background-color: 0 x green->red->blue
 #        0.1 width: ->100vw
   0.1 border-top-width, border-bottom-width: 0
-  5 border-top-width, border-bottom-width: -->50vh;height: -->0vh; width: -->0;background-color: ->red
+  2 border-top-width, border-bottom-width: -->50vh;height: -->0vh; width: -->0;background-color: ->red
   # border-top-width, border-bottom-width: 0-->70%-->0%
      1 top:-->5%; left: -->40%;height: -->0%; width: ->0%;border-left-color, border-right-color: ->black;border-left-width, border-right-width: -->10vw; border-top-width, border-bottom-width: -->45vh; border-top-color: ->green;border-bottom-color:->yellow
         0.2 rotate: 4 x calc(i/8*360deg);height:0 x calc(i/8*15%)->calc((1 - i/8)*15%);border-top-color: 0 x red->green->blue;border-bottom-color: 0 x green->blue->red
@@ -114,16 +114,38 @@
       return result
     }
 
+
+function numDefault(str,defaultValue) {
+  let result = parseInt(str)
+  return isNaN(result) ? defaultValue : result
+}
+
+function processPattern(str, pattern, callback) {
+  const regex = new RegExp('^' + pattern.source);
+  const match = str.match(regex);
+  if (match) {
+      callback(match);
+      dlog(`processPattern(${pattern} "${match[1]}"`)
+      str = str.replace(regex, '');
+  }
+  return str;
+}
+
   function animlParse(spec) {
     lastval = {}
+    let tmaxscaler = 1, tscaler = 1
 
     function animline(line) {
+
+      line = processPattern(line,/\s*\*(-|\d*)\s+/,m=>tscaler = numDefault(m[1].replace('-',1),10))
+      tmaxscaler = Math.max(tmaxscaler,tscaler)
       prefix = /^\s*([\d.]+)\b/
       let duration = 1
       if ( pre = line.match(prefix) ) {
         duration = parseFloat(pre[1])
         line = line.replace(prefix,'')
       }
+      duration *= tscaler
       let lastcount = 1
       let nextstep = reltime + duration
       for ( field of line.split(';')) {
@@ -216,6 +238,7 @@
   }
   dlog(JSON.stringify(propvals,false," "))
     console.log(propvals)
+  // reltime /= tmaxscaler
   let keyframe = ""
   for ( stepkey in propvals ) {
     // dlog(`stepkey = ${stepkey}\n`)
@@ -230,7 +253,7 @@
   dlog ( keyframe )
   document.querySelector('#autogenstyle').innerHTML = `
   :root {
-      --autogenlen: ${reltime}s;
+      --autogenlen: ${reltime/tmaxscaler}s;
   }
   @keyframes divany {
     ${keyframe}
