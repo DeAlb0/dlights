@@ -111,7 +111,7 @@
 
     function val2arr(text) {
       let result= []
-      for ( value1s of val.split('->')) {
+      for ( value1s of text.split('->')) {
         if ( m = value1s.match(/i\/(\d+)/) ) {
           for ( let i = 0 ; i < parseInt(m[1]) ; i++ ) {
              result.push(value1s.replace(/\bi\b/,i))
@@ -124,22 +124,24 @@
       return result
     }
 
-
-function numDefault(str,defaultValue) {
-  let result = parseFloat(str)
-  return isNaN(result) ? defaultValue : result
-}
-
-String.prototype.processPattern = function(pattern, callback) {
-  const regex = new RegExp('^' + pattern.source);
-  let str = this.replace(/^\s*/,'')
-  const match = str.match(regex);
-  if (match) {
-      callback(match);
-      // dlog(`processPattern(${pattern} "${match[1]}"`)
-      str = this.replace(regex, '');
+class specLine {
+  constructor(text) {
+     this.line = text
   }
-  return str;
+  processPattern (pattern, notfoundValue, defaultValue) {
+    let result = notfoundValue
+    const regex = new RegExp('^' + pattern.source)
+    this.line = this.line.replace(/^\s*/,'')
+    const match = this.line.match(regex)
+    if (match) {
+        result = match[1] === "" ? defaultValue : parseFloat(match[1].replace('-',1),10)
+        this.line = this.line.replace(regex, '')
+    }
+    return result
+  }
+  get remainder() {
+    return this.line
+  }
 }
 
   function animlParse(spec) {
@@ -147,28 +149,25 @@ String.prototype.processPattern = function(pattern, callback) {
     let tmaxscaler = 1, tscaler = 1
 
     function animline(line) {
-      let duration = 1
-      line = line
-          .processPattern(/\*(-|\d*)\s+/,m=>tscaler  = numDefault(m[1].replace('-',1),10))
-          .processPattern(/([\d\.]+)\b/, m=>duration = parseFloat(m[1]))
+      const cline = new specLine(line)
+      let tscaler  = cline.processPattern(/\*(-|\d*)\s+/,1,10)
+      let duration = cline.processPattern(/([\d\.]+)\b/,1)
       tmaxscaler = Math.max(tmaxscaler,tscaler)
-      prefix = /^\s*([\d.]+)\b/
       duration *= tscaler
       let lastcount = 1
       let nextstep = reltime + duration
-      for ( field of line.split(';')) {
+      for ( field of cline.remainder.split(';')) {
         if ( /^\s*$/.test(field) ) continue
-        [prop,val] = field.split(':')
-        if ( val === undefined ) {
+        [prop,vala] = field.split(':')
+        if ( vala === undefined ) {
           console.warn(`animl:warn: no value for property ${prop}`)
           continue
         }
-        let offset = 0
-        let multi = 1
-        val = val.processPattern(/\+([\d.]+)/, m=>offset = parseFloat(m[1]))
-                 .processPattern(/(\d+)\s*x/,  m=>multi  = parseFloat(m[1]))
+        const valine = new specLine(vala)
+        let offset = valine.processPattern(/\+([\d.]+)/,0)
+        let multi  = valine.processPattern(/(\d+)\s*x/,1)
         let relreltime = reltime + offset
-        let values = val2arr(val)
+        let values = val2arr(valine.remainder)
         let valcount = values.length
         if ( multi === 0 ) {
           multi = Math.floor(lastcount / valcount)
@@ -192,7 +191,7 @@ String.prototype.processPattern = function(pattern, callback) {
               if ( lastval[sprop] !== undefined ) {
                 value = lastval[sprop]
               } else {
-                value = val.split('->')[1]
+                value = valine.remainder.split('->')[1]
               }
               valcount--
               currentmulti = 1
