@@ -120,13 +120,14 @@ function numDefault(str,defaultValue) {
   return isNaN(result) ? defaultValue : result
 }
 
-function processPattern(str, pattern, callback) {
+String.prototype.processPattern = function(pattern, callback) {
   const regex = new RegExp('^' + pattern.source);
-  const match = str.match(regex);
+  const match = this.match(regex);
+  let str = this
   if (match) {
       callback(match);
       dlog(`processPattern(${pattern} "${match[1]}"`)
-      str = str.replace(regex, '');
+      str = this.replace(regex, '');
   }
   return str;
 }
@@ -136,16 +137,12 @@ function processPattern(str, pattern, callback) {
     let tmaxscaler = 1, tscaler = 1
 
     function animline(line) {
-      line = line.replace(/^\s*/,'')
-      line = processPattern(line,/\*(-|\d*)\s+/,m=>tscaler = numDefault(m[1].replace('-',1),10))
-      tmaxscaler = Math.max(tmaxscaler,tscaler)
       let duration = 1
-      line = processPattern(line,/([\d\.]+)\b/,m=>duration = numDefault(m[1],1))
-
+      line = line.replace(/^\s*/,'')
+          .processPattern(/\*(-|\d*)\s+/,m=>tscaler = numDefault(m[1].replace('-',1),10))
+          .processPattern(/([\d\.]+)\b/,m=>duration = numDefault(m[1],1))
+      tmaxscaler = Math.max(tmaxscaler,tscaler)
       prefix = /^\s*([\d.]+)\b/
-//       let duration = 1
-
-
       duration *= tscaler
       let lastcount = 1
       let nextstep = reltime + duration
@@ -157,6 +154,7 @@ function processPattern(str, pattern, callback) {
           continue
         }
         let offset = 0
+        
         if ( match = val.match(/\+([\d.]+)/) ) {
           offset = parseFloat(match[1])
           val = val.replace(/\+([\d.]+)/,'')
