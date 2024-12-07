@@ -122,8 +122,8 @@ function numDefault(str,defaultValue) {
 
 String.prototype.processPattern = function(pattern, callback) {
   const regex = new RegExp('^' + pattern.source);
-  const match = this.match(regex);
-  let str = this
+  let str = this.replace(/^\s*/,'')
+  const match = str.match(regex);
   if (match) {
       callback(match);
       dlog(`processPattern(${pattern} "${match[1]}"`)
@@ -138,9 +138,9 @@ String.prototype.processPattern = function(pattern, callback) {
 
     function animline(line) {
       let duration = 1
-      line = line.replace(/^\s*/,'')
-          .processPattern(/\*(-|\d*)\s+/,m=>tscaler = numDefault(m[1].replace('-',1),10))
-          .processPattern(/([\d\.]+)\b/,m=>duration = numDefault(m[1],1))
+      line = line
+          .processPattern(/\*(-|\d*)\s+/,m=>tscaler  = numDefault(m[1].replace('-',1),10))
+          .processPattern(/([\d\.]+)\b/, m=>duration = parseFloat(m[1]))
       tmaxscaler = Math.max(tmaxscaler,tscaler)
       prefix = /^\s*([\d.]+)\b/
       duration *= tscaler
@@ -154,17 +154,9 @@ String.prototype.processPattern = function(pattern, callback) {
           continue
         }
         let offset = 0
-        
-        if ( match = val.match(/\+([\d.]+)/) ) {
-          offset = parseFloat(match[1])
-          val = val.replace(/\+([\d.]+)/,'')
-        }
-        const multire = /\s*(\d+)\s*x\s*/
         let multi = 1
-        if ( multim = val.match(multire) ) {
-          multi = parseFloat(multim[1])
-          val = val.replace(multire,'')
-        }
+        val = val.processPattern(/\+([\d.]+)/, m=>offset = parseFloat(m[1]))
+                 .processPattern(/(\d+)\s*x/,  m=>multi  = parseFloat(m[1]))
         let relreltime = reltime + offset
         let values = val2arr(val)
         let valcount = values.length
