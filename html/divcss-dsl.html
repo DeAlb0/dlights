@@ -116,7 +116,7 @@
 
 
 function numDefault(str,defaultValue) {
-  let result = parseInt(str)
+  let result = parseFloat(str)
   return isNaN(result) ? defaultValue : result
 }
 
@@ -136,15 +136,16 @@ function processPattern(str, pattern, callback) {
     let tmaxscaler = 1, tscaler = 1
 
     function animline(line) {
-
-      line = processPattern(line,/\s*\*(-|\d*)\s+/,m=>tscaler = numDefault(m[1].replace('-',1),10))
+      line = line.replace(/^\s*/,'')
+      line = processPattern(line,/\*(-|\d*)\s+/,m=>tscaler = numDefault(m[1].replace('-',1),10))
       tmaxscaler = Math.max(tmaxscaler,tscaler)
-      prefix = /^\s*([\d.]+)\b/
       let duration = 1
-      if ( pre = line.match(prefix) ) {
-        duration = parseFloat(pre[1])
-        line = line.replace(prefix,'')
-      }
+      line = processPattern(line,/([\d\.]+)\b/,m=>duration = numDefault(m[1],1))
+
+      prefix = /^\s*([\d.]+)\b/
+//       let duration = 1
+
+
       duration *= tscaler
       let lastcount = 1
       let nextstep = reltime + duration
