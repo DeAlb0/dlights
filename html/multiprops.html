@@ -178,7 +178,7 @@ function* cartesiana(arrallp) {
 }
 
 function multiprops(multiPropSpec) {
-  const propSplit = multiPropSpec.split(', ').map(p=>p.split('-').map(x=>x.split(',')))
+  const propSplit = multiPropSpec.split(',').map(p=>p.split('-').map(x=>x.split('+')))
   // propSplit.push(['xx','xy'])
   dlog(JSON.stringify(propSplit))
   const propArr = [...cartesiana(propSplit)]
@@ -186,7 +186,7 @@ function multiprops(multiPropSpec) {
 }
 
 function testmultiprops() {
-  dlog(JSON.stringify(multiprops('border-bottom-width, border,content-left,right-color,width'),null,2))
+  dlog(JSON.stringify(multiprops('border-bottom-width, border+content-left+right-color+width'),null,2))
   const testprop = 'border-left-width, border-right-width, border-top-width, border-bottom-width'
   // const testprop = 'border,content-left,right-color,width'
   const propa = multiprops(testprop)
