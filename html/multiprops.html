@@ -144,11 +144,6 @@ class specLine {
   }
 }
 
-function* cartesian(head, ...tail) {
-  const remainder = tail.length > 0 ? cartesian(...tail) : [[]];
-  for (let r of remainder) for (let h of head) yield [h, ...r];
-}
-
 function* cartesiana(arrallp) {
   // dlog(`cartesiana called for ${JSON.stringify(arra)}`)
   for ( let arra of arrallp ) {
@@ -159,41 +154,10 @@ function* cartesiana(arrallp) {
     }
     const remainder = arra.length > 2 ? cartesiana([arra.slice(1)]) : arra[1];
     // dlog(`remainder = ${JSON.stringify(remainder)}`)
-    // if ( remainder.length > -3 )
     for (let r of remainder) 
        for (let h of arra[0])
          yield h + "-" + r;
   }
-}
-
-function multiprops(multiPropSpec) {
-  const propSplit = multiPropSpec.split(',').map(p=>p.split('-').map(x=>x.split('+')))
-  // propSplit.push(['xx','xy'])
-  dlog(JSON.stringify(propSplit))
-  const propArr = [...cartesiana(propSplit)]
-  return propArr
-}
-
-function testmultiprops() {
-  dlog(JSON.stringify(multiprops('border-bottom-width, border+content-left+right-color+width'),null,2))
-  const testprop = 'border-left-width, border-right-width, border-top-width, border-bottom-width'
-  // const testprop = 'border,content-left,right-color,width'
-  const propa = multiprops(testprop)
-  dlog(JSON.stringify(propa,null,2))
-
-}
-
-function testmultipropsDirect() {
-  const testprop = 'border,content-left,right,top-color,width'
-  propa = testprop.split('-').map(x=>x.split(','))
-
-  dlog(JSON.stringify(propa))
-  dlog(JSON.stringify([...cartesiana(propa)]))
-  dlog(JSON.stringify([...cartesiana([[1, 2], [10, 20], [100, 200, 300]])]))
-  let cart = [...cartesian([1, 2], [10, 20], [100, 200, 300])]
-  dlog(JSON.stringify(cart))
-  console.log(...cartesian([1, 2], [10, 20], [100, 200, 300]))
-
 }
 
   function animlParse(spec) {
