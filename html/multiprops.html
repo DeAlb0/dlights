@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta name="description" content="flashing ligths to acompany the music" />
+  <meta charset="utf-8">
+  <title>Lights & Colors</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="DeAlb0">
+<script>
+  const animl = `
+  1 background-color : blue; height,width:0-->40vh;left:0;top:0 ; border-radius:50% # ;left: 50%-->40%;top: 50%-->40%;
+        0.15 left: 5 x calc(i/9*90vw)->calc((1 - i/9)*90vw) ; top: 0 x 0->calc(i/7*90vh)->calc((1 - i/7)*90vh); background-color: 0 x blue->blue->green->green->red
+  1 border-radius: 0 # ;background-color: black
+  1 border-radius: -->0;background-color : ->red; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
+  2 border-left-color, border-right-color: blue; width:70vw-->20vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
+      0.5 border-left-color: 2 x red->blue->green; border-right-color: 0 x blue->green->red; background-color: 0 x green->red->blue
+#        0.1 width: ->100vw
+  0.1 border-top-width, border-bottom-width: 0
+  2 border-top-width, border-bottom-width: -->50vh;height: -->0vh; width: -->0;background-color: ->red
+  # border-top-width, border-bottom-width: 0-->70%-->0%
+    1 top:-->5%; left: -->40%;height: -->0%; width: ->0%;border-left-color, border-right-color: ->black;border-left-width, border-right-width: -->10vw; border-top-width, border-bottom-width: -->45vh; border-top-color: ->green;border-bottom-color:->yellow
+        0.2 rotate: 2 x calc(i/8*360deg);height:0 x calc(i/8*15%)->calc((1 - i/8)*15%);border-top-color: 0 x red->green->blue;border-bottom-color: 0 x green->blue->red
+        0.2 rotate: unset
+
+  # 3 rotate: calc(4 * 360deg)
+  # 3 rotate: unset
+  1 top:-->5%; left: -->0%;height: -->50%; width: ->100%;border-left-width, border-right-width: -->0; border-top-width, border-bottom-width: -->0
+  2 top:25%; left: 0%;height: 50%; width: 100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->green;border-bottom-color:->lila
+  #  * 2 top:-->5%; left: -->0%;height: -->50%; width: ->100%
+  0.7 background-color: 4 x red->pink->yellow->lightgreen->orange; top: 0 x calc(i/3 * 75%)
+  1 top:-->5%; left: -->0%;height: -->50%; width: ->100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->red;border-bottom-color:->yellow
+  0.2 background-color: 4 x red->pink->yellow->lightgreen->orange
+  5 top:5%; left: 0%;height: 50%; width: 100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->green;border-bottom-color:->lila
+  
+  # 1 height:-->100vh ; left: 15vw;top: -->0vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: blue; width:10vw;border-left-width, border-right-width: 30vw;
+  #    * 1 background-color : -->green; height:100vh ; left: -->0vw;top: 0vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: -->green; width:-->100vw;border-left-width, border-right-width: -->0vw;
+  #3 left: -->0;width: -->100vw; top:-->0; border-top-width, border-bottom-width: -->25vh;height:-->0;width:100vw
+
+  45 color:->black
+    `
+   dummyrule = `
+   element.style {
+    left: 10vw;
+    top: 10vh;
+    height: 30vh;
+    width: 80vw;
+    background-color: blue;
+    position: absolute;
+    border-top-width: 20vh;
+    border-top-color: red;
+    /* border-width: 200px; */
+    /* border: solid green 100px; */
+    border-style: solid;
+}
+    `
+    dummy = `
+
+  # border-width: 0->20vh; border-color: ->blue;width:->0;height:->0;left,top:->30%
+  # height,width: 4 x calc((i/4+0)*50%);left,top : 4 x calc(30% - i/4*20%);border-color: 0 x green->blue->red;background-color: 0 x red->green->blue
+  # border-width: 20vh; border-color: blue;width:0;height:0;left:30%;top:30%
+  # 2 border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
+
+  # 0.5 border-left-color: +0.25 15 x red->blue->green ; border-right-color: 15 x blue->green->red; background-color : 8 x grey -> black; 
+  
+  # 1 border-right-color : 1x red->green->blue
+  # 1 border-right-color : yellow
+  # | 
+
+
+    # 4 background-color : -->green; height:-->0vh ; left: -->0;top: -->0vh; border-top-width, border-bottom-width: -->25vh; border-left-color, border-right-color: -->green; width:100vw;border-left-width, border-right-width: -->0; height : 0
+
+    # width: 100vw;border-left-width, border-right-width: 0vw; height : 70vh-->0vh; top: 15vh-->0;border-top-width, border-bottom-width: 25vh
+    opacity : 90%
+    # top: 0; border-top-width, border-bottom-width: 0-->12vw; height: 0-->25vh; width: ->0;left: 0;border-left-width, border-right-width: 0 
+    0.5 top: 4 x 0vw->calc(i/4 * 100vh);border-top-color: 6 x red->green->blue;border-bottom-color: 6 x blue->red->green
+    top: ->0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0
+    # 0.5 top: 4 x 0vw->calc(1 * 100vh / 4)->calc(2 * 100vh / 4)->calc(3 * 100vh / 4)->calc(4 * 100vh / 4);border-top-color: 8 x red->green->blue;border-bottom-color: 8 x blue->red->green
+
+
+    background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
+    # 2 background-color : aqua->green->blue->red->blue->green
+    border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0; 
+    # 1 border-right-color : 1x red->green->blue
+    # 1 border-right-color : yellow
+    # | 
+    opacity : 90%
+    top: 0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0 
+    0.5 top: 4 x calc(i/4 * 100vh);border-top-color: 5 x red->green->blue;border-bottom-color: 5 x blue->red->green
+    top: 0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0 
+    # 0.5 top: 4 x 0vw->calc(1 * 100vh / 4)->calc(2 * 100vh / 4)->calc(3 * 100vh / 4)->calc(4 * 100vh / 4);border-top-color: 8 x red->green->blue;border-bottom-color: 8 x blue->red->green
+    #######################
+    top: 0; border-top-width, border-bottom-width: 12vw; height: 0; width: 100vw;left: 0;border-left-width, border-right-width: 0
+    top: 0; border-top-width, border-bottom-width: 0; border-left-width, border-right-width: 12vw
+    background-color : lightcoral; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
+    border-left-color, border-right-color: blue; width:70vw-->10vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0; 
+
+    left: -->0; border-left-width, border-right-width: 30vw-->12vw; width: ->0
+    0.5 left: 4x 0vw->calc(1 * 100vw / 8)->calc(2*100vw/8)->calc(3 * 100vw / 8)->calc(4 * 100vw / 8)->calc(5 * 100vw / 8)->calc(6 * 100vw / 8);border-right-color: 15 x blue->green->red;border-left-color: 15 x red->blue->green;
+    left: 0; border-left-width, border-right-width: 12vw; width: 0
+
+    0.5 border-left-color: +0.25 15 x red->blue->green ; border-right-color: 15 x blue->green->red; background-color : 8 x grey -> black; opacity: +0.25 20 x 100%->50%; left: 10x 0vw->12vw->24vw->36vw->48vw
+    left: 3x 0vw->12vw->24vw->36vw->48vw
+    # border-left-color,border-right-color : 3x red->green->blue
+    border-left-color : grey
+    0.001 height: 70% ;width: 70%;left: 15%;top: 15%;border-left-width, border-right-width: 30vw;width:10vw; height : 100vh; top: 0
+    `
+    function dlog(text) {
+      document.querySelector('.log').innerText += text + "\n"
+    }
+
+    function val2arr(text) {
+      let result= []
+      for ( value1s of text.split('->')) {
+        if ( m = value1s.match(/i\/(\d+)/) ) {
+          for ( let i = 0 ; i < parseInt(m[1]) ; i++ ) {
+             result.push(value1s.replace(/\bi\b/,i))
+          }
+        } else {
+          result.push(value1s)
+        }
+      }
+      // dlog(`val2arr(${text}) = ${JSON.stringify(result)}`)
+      return result
+    }
+
+class specLine {
+  constructor(text) {
+     this.line = text
+  }
+  processPattern (pattern, notfoundValue, defaultValue) {
+    let result = notfoundValue
+    const regex = new RegExp('^' + pattern.source)
+    this.line = this.line.replace(/^\s*/,'')
+    const match = this.line.match(regex)
+    if (match) {
+        result = match[1] === "" ? defaultValue : parseFloat(match[1].replace('-',1),10)
+        this.line = this.line.replace(regex, '')
+    }
+    return result
+  }
+  get remainder() {
+    return this.line
+  }
+}
+
+function* cartesian(head, ...tail) {
+  const remainder = tail.length > 0 ? cartesian(...tail) : [[]];
+  for (let r of remainder) for (let h of head) yield [h, ...r];
+}
+
+function* cartesiana(arra) {
+  // dlog(`cartesiana called for ${JSON.stringify(arra)}`)
+  const remainder = arra.length > 2 ? cartesiana(arra.slice(1)) : arra[1];
+  // dlog(`remainder = ${JSON.stringify(remainder)}`)
+  // if ( remainder.length > -3 )
+  for (let r of remainder) for (let h of arra[0]) yield h + "-" + r;
+}
+
+function multiprops(multiPropSpec) {
+  const propSplit = multiPropSpec.split('-').map(x=>x.split(','))
+  // propSplit.push(['xx','xy'])
+  dlog(JSON.stringify(propSplit))
+  const propArr = [...cartesiana(propSplit)]
+  return propArr
+}
+
+function testmultiprops() {
+  dlog(JSON.stringify(multiprops('border,content-left,right-color,width'),null,2))
+  const testprop = 'border-left-width, border-right-width, border-top-width, border-bottom-width'
+  // const testprop = 'border,content-left,right-color,width'
+  const propa = multiprops(testprop)
+  dlog(JSON.stringify(propa,null,2))
+
+}
+
+function testmultipropsDirect() {
+  const testprop = 'border,content-left,right,top-color,width'
+  propa = testprop.split('-').map(x=>x.split(','))
+
+  dlog(JSON.stringify(propa))
+  dlog(JSON.stringify([...cartesiana(propa)]))
+  dlog(JSON.stringify([...cartesiana([[1, 2], [10, 20], [100, 200, 300]])]))
+  let cart = [...cartesian([1, 2], [10, 20], [100, 200, 300])]
+  dlog(JSON.stringify(cart))
+  console.log(...cartesian([1, 2], [10, 20], [100, 200, 300]))
+
+}
+
+  function animlParse(spec) {
+    lastval = {}
+    let tscaler = 1, tmaxscaler = 1
+
+    function animline(line) {
+      const cline = new specLine(line)
+      tscaler  = cline.processPattern(/\*(-|\d*)\s+/,tscaler,10)
+      let duration = cline.processPattern(/([\d\.]+)\b/,1)
+      tmaxscaler = Math.max(tmaxscaler,tscaler)
+      duration *= tscaler
+      tscaler = (tscaler + 1) / 2
+      let lastcount = 1
+      let nextstep = reltime + duration
+      for ( field of cline.remainder.split(';')) {
+        if ( /^\s*$/.test(field) ) continue
+        [prop,vala] = field.split(':')
+        if ( vala === undefined ) {
+          console.warn(`animl:warn: no value for property ${prop}`)
+          continue
+        }
+        const valine = new specLine(vala)
+        let offset = valine.processPattern(/\+([\d.]+)/,0)
+        let multi  = valine.processPattern(/(\d+)\s*x/,1)
+        let relreltime = reltime + offset
+        let values = val2arr(valine.remainder)
+        let valcount = values.length
+        if ( multi === 0 ) {
+          multi = Math.floor(lastcount / valcount)
+        } else {
+          lastcount = multi * valcount
+        }
+        let vcount = 0
+        let stepwise = 1
+        for ( value1 of values ) {
+          let currentmulti = multi
+          // if ( propvals[vcount] === undefined ) propvals[vcount] = ""
+          value = value1.replace(/-$/,'')
+          if ( valcount > 0 && vcount < valcount - 1 ) {
+            stepwise = +(value === value1)
+            // dlog(`stepwise(${value1},${vcount}/${valcount}) = ${stepwise}   for ${prop}  ` + value1 )
+          }
+          let stepduration = duration
+          for ( sprop of prop.replace(/\s+/g,'').split(',')) {
+            if ( /^\s*$/.test(value) ) {
+              // dlog(`checking lastval[${sprop}] = ${lastval[sprop]}\n`)
+              if ( lastval[sprop] !== undefined ) {
+                value = lastval[sprop]
+              } else {
+                value = valine.remainder.split('->')[1]
+              }
+              valcount--
+              currentmulti = 1
+              stepduration = 0.1
+              stepwise = 0
+            }
+            relreltime = parseFloat(relreltime.toFixed(2)) // avoid fractions in the 10th digit to appear
+            let key = `${relreltime} ${currentmulti} ${stepduration} ${valcount} ${stepwise}`
+            propvals[key] = (propvals[key] ?? "") + sprop + ":"+value + ";"
+            // dlog(`lastval[${sprop}]=${value}`)
+            lastval[sprop] = value
+          }
+          relreltime += stepduration
+          vcount++
+        }
+        relreltime += ( vcount * (multi-1) - 0 ) * duration
+        //  dlog(`multi = ${multi}`)
+        if ( relreltime > nextstep ) nextstep = relreltime
+      }
+      reltime = nextstep
+      // combined = propvals.join('\n')
+    }
+  testmultiprops()
+  let reltime = 0  
+  propvals = new Map()
+  linestack = []
+  let lastlinelvl = undefined
+  let lele = {lvl:999}
+  for ( line of spec.split("\n") ) {
+    line = line.replace(/#.*/,'')
+    if ( /^\s*(#.*)?$/.test(line) ) continue
+    let linelvl = line.match(/^ */)[0].length
+    if ( linelvl > lele.lvl ) {
+       linestack.push(lele)
+    } else if ( linestack.at(-1) !== undefined && linelvl <= linestack.at(-1).lvl ) {
+        let lele = linestack.pop()
+        animline(lele.line)
+    }
+    animline(line)
+    let lastvals = 'r:0;' + Object.entries(lastval).map(a=>a.join(':')).join(';')
+    lele = { lvl: linelvl, line:lastvals}
+  }
+  for ( ele of linestack.reverse() ) {
+    animline(ele.line)
+  }
+  dlog(JSON.stringify(propvals,false," "))
+  // console.log(propvals)
+  // reltime /= tmaxscaler
+  let keyframe = ""
+  for ( stepkey in propvals ) {
+    // dlog(`stepkey = ${stepkey}\n`)
+    const [relpos,multi,dur,steps,stepwise] = stepkey.split(' ').map(x=>parseFloat(x))
+    if ( stepwise ) {
+      keyframe += [...Array(multi).keys()].map(i=>`${((relpos+(i*dur*steps))/reltime*100).toFixed(2)}%`).join(',')
+      keyframe += `{${propvals[stepkey]}}\n`
+    }
+    keyframe += [...Array(multi).keys()].map(i=>`${((relpos+(i*dur*steps+dur))/reltime*100-0.01).toFixed(2)}%`).join(',')
+    keyframe += `{${propvals[stepkey]}}\n`
+  }
+  dlog ( keyframe )
+  document.querySelector('#autogenstyle').innerHTML = `
+  :root {
+      --autogenlen: ${reltime/tmaxscaler}s;
+  }
+  @keyframes no_divany {
+    ${keyframe}
+  }    
+  `
+}
+document.addEventListener("DOMContentLoaded",x=> animlParse(animl))
+document.addEventListener("click", function() {
+  document.querySelector('.animatable').classList.toggle('animate')
+})
+
+</script>  
+<style id="autogenstyle"></style>
+<style>
+    .animate {
+        animation: divany var(--autogenlen) infinite 0s;
+        position: absolute;
+        animation-composition: replace;
+        border: solid blue 0px;
+    }
+    .log { color : white; font-family: 'Courier New', Courier, monospace; }
+    body { background-color: black;}
+</style>
+<body>
+  <pre class="log"></pre>
+  <div class="animate animatable"></div>
+</body>
+
+</html>
