@@ -149,7 +149,7 @@ function* cartesian(head, ...tail) {
   for (let r of remainder) for (let h of head) yield [h, ...r];
 }
 
-function* cartesiana(arra) {
+function* old_cartesiana(arra) {
   // dlog(`cartesiana called for ${JSON.stringify(arra)}`)
   const remainder = arra.length > 2 ? cartesiana(arra.slice(1)) : arra[1];
   // dlog(`remainder = ${JSON.stringify(remainder)}`)
@@ -157,7 +157,7 @@ function* cartesiana(arra) {
   for (let r of remainder) for (let h of arra[0]) yield h + "-" + r;
 }
 
-function multiprops(multiPropSpec) {
+function old_multiprops(multiPropSpec) {
   const propSplit = multiPropSpec.split('-').map(x=>x.split(','))
   // propSplit.push(['xx','xy'])
   dlog(JSON.stringify(propSplit))
@@ -165,8 +165,28 @@ function multiprops(multiPropSpec) {
   return propArr
 }
 
+function* cartesiana(arrallp) {
+  // dlog(`cartesiana called for ${JSON.stringify(arra)}`)
+  for ( let arra of arrallp ) {
+    const remainder = arra.length > 2 ? cartesiana([arra.slice(1)]) : arra[1];
+    // dlog(`remainder = ${JSON.stringify(remainder)}`)
+    // if ( remainder.length > -3 )
+    for (let r of remainder) 
+       for (let h of arra[0])
+         yield h + "-" + r;
+  }
+}
+
+function multiprops(multiPropSpec) {
+  const propSplit = multiPropSpec.split(', ').map(p=>p.split('-').map(x=>x.split(',')))
+  // propSplit.push(['xx','xy'])
+  dlog(JSON.stringify(propSplit))
+  const propArr = [...cartesiana(propSplit)]
+  return propArr
+}
+
 function testmultiprops() {
-  dlog(JSON.stringify(multiprops('border,content-left,right-color,width'),null,2))
+  dlog(JSON.stringify(multiprops('border-bottom-width, border,content-left,right-color,width'),null,2))
   const testprop = 'border-left-width, border-right-width, border-top-width, border-bottom-width'
   // const testprop = 'border,content-left,right-color,width'
   const propa = multiprops(testprop)
