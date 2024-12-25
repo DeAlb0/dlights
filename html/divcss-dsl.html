@@ -13,24 +13,24 @@
         0.15 left: 5 x calc(i/9*90vw)->calc((1 - i/9)*90vw) ; top: 0 x 0->calc(i/7*90vh)->calc((1 - i/7)*90vh); background-color: 0 x blue->blue->green->green->red
   1 border-radius: 0 # ;background-color: black
   1 border-radius: -->0;background-color : ->red; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
-  2 border-left-color, border-right-color: blue; width:70vw-->20vw;border-left-width, border-right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
+  2 border-left+right-color: blue; width:70vw-->20vw;border-left+right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
       0.5 border-left-color: 2 x red->blue->green; border-right-color: 0 x blue->green->red; background-color: 0 x green->red->blue
 #        0.1 width: ->100vw
-  0.1 border-top-width, border-bottom-width: 0
-  2 border-top-width, border-bottom-width: -->50vh;height: -->0vh; width: -->0;background-color: ->red
+  0.1 border-top+bottom-width: 0
+  2 border-top+bottom-width: -->50vh;height: -->0vh; width: -->0;background-color: ->red
   # border-top-width, border-bottom-width: 0-->70%-->0%
-    1 top:-->5%; left: -->40%;height: -->0%; width: ->0%;border-left-color, border-right-color: ->black;border-left-width, border-right-width: -->10vw; border-top-width, border-bottom-width: -->45vh; border-top-color: ->green;border-bottom-color:->yellow
+    1 top:-->5%; left: -->40%;height: -->0%; width: ->0%;border-left+right-color: ->black;border-left+right-width: -->10vw; border-top+bottom-width: -->45vh; border-top-color: ->green;border-bottom-color:->yellow
         0.2 rotate: 2 x calc(i/8*360deg);height:0 x calc(i/8*15%)->calc((1 - i/8)*15%);border-top-color: 0 x red->green->blue;border-bottom-color: 0 x green->blue->red
         0.2 rotate: unset
 
   # 3 rotate: calc(4 * 360deg)
   # 3 rotate: unset
-  1 top:-->5%; left: -->0%;height: -->50%; width: ->100%;border-left-width, border-right-width: -->0; border-top-width, border-bottom-width: -->0
-  * 2 top:25%; left: 0%;height: 50%; width: 100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->green;border-bottom-color:->lila
-  # * 2 top:-->5%; left: -->0%;height: -->50%; width: ->100%
-  1 background-color: 4 x red->pink->yellow->lightgreen->orange; top: 0 x calc(i/3 * 75%)
+  1 top:-->5%; left: -->0%;height: -->50%; width: ->100%;border-left+right+top+bottom-width: -->0
+  2 top:25%; left: 0%;height: 50%; width: 100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->green;border-bottom-color:->lila
+  #  * 2 top:-->5%; left: -->0%;height: -->50%; width: ->100%
+  0.7 background-color: 4 x red->pink->yellow->lightgreen->orange; top: 0 x calc(i/3 * 75%)
   1 top:-->5%; left: -->0%;height: -->50%; width: ->100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->red;border-bottom-color:->yellow
-  1 background-color: 4 x red->pink->yellow->lightgreen->orange
+  0.2 background-color: 4 x red->pink->yellow->lightgreen->orange
   5 top:5%; left: 0%;height: 50%; width: 100%;border-left-width, border-right-width, border-top-width, border-bottom-width: 0; border-top-color: ->green;border-bottom-color:->lila
   
   # 1 height:-->100vh ; left: 15vw;top: -->0vh; border-top-width, border-bottom-width: 0; border-left-color, border-right-color: blue; width:10vw;border-left-width, border-right-width: 30vw;
@@ -144,6 +144,22 @@ class specLine {
   }
 }
 
+function* cartesiana(arrallp) {
+  // dlog(`cartesiana called for ${JSON.stringify(arra)}`)
+  for ( let arra of arrallp ) {
+    if ( arra.length === 1 ) {
+      for ( h of arra[0] )
+         yield h
+      continue
+    }
+    const remainder = arra.length > 2 ? cartesiana([arra.slice(1)]) : arra[1];
+    // dlog(`remainder = ${JSON.stringify(remainder)}`)
+    for (let r of remainder) 
+       for (let h of arra[0])
+         yield h + "-" + r;
+  }
+}
+
   function animlParse(spec) {
     lastval = {}
     let tscaler = 1, tmaxscaler = 1
@@ -186,7 +202,9 @@ class specLine {
             // dlog(`stepwise(${value1},${vcount}/${valcount}) = ${stepwise}   for ${prop}  ` + value1 )
           }
           let stepduration = duration
-          for ( sprop of prop.replace(/\s+/g,'').split(',')) {
+          const propSplit = prop.replace(/\s+/g,'').split(',').map(p=>p.split('-').map(x=>x.split('+')))
+          // dlog(JSON.stringify(propSplit))
+          for ( sprop of cartesiana(propSplit)) {
             if ( /^\s*$/.test(value) ) {
               // dlog(`checking lastval[${sprop}] = ${lastval[sprop]}\n`)
               if ( lastval[sprop] !== undefined ) {
