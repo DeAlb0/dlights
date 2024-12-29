@@ -25,7 +25,7 @@
     1 top:-->5%; left: -->40%;height: -->0%; width: ->0%;border-left+right-color: ->black;border-left+right-width: -->10vw; border-top+bottom-width: -->45vh; border-top-color: ->green;border-bottom-color:->yellow
         1 markerx:0
         # * 0.2 rotate: 0deg;left: 4 x calc(30vw + i/4*0vw)->calc(30vw + (1 - i/4)*40vw) ; top: 4 x 0-->calc(30vh + (i/4 *40vh))->calc(30vh + (1 - i/4)*40vh); rotatex: 8 x calc(i/8*360deg);border-top-color: 0 x red->green->blue;border-bottom-color: 0 x green->blue->red;
-        * 1 rotate: 0deg; top: 4 x 30vh-->10vh; left: 0 x 40vw-->30vw;border-top-color: 0 x red->green->blue;border-bottom-color: 0 x green->blue->red;
+        1 rotate: 0deg; top: 4 x 30vh-->10vh; left: 0 x 40vw-->30vw;border-top-color: 0 x red->green->blue;border-bottom-color: 0 x green->blue->red;
         0.2 rotate: calc(4*360deg)
         0.2 rotate: unset
 
@@ -232,7 +232,7 @@ document.addEventListener("click", function() {
         border: solid blue 0px;
     }
     .log { color : white; font-family: 'Courier New', Courier, monospace; }
-    body { background-color: black;}
+    body { background-color: black; cursor: crosshair;}
     @media (min-width: 1920px) {
     .log {
         color:darkblue;
