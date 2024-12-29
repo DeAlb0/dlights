@@ -144,19 +144,22 @@ class specLine {
   }
 }
 
-function* cartesiana(arrallp) {
-  // dlog(`cartesiana called for ${JSON.stringify(arra)}`)
-  for ( let arra of arrallp ) {
-    if ( arra.length === 1 ) {
-      for ( h of arra[0] )
-         yield h
-      continue
+function* multiprops(multiPropSpec) {
+  function* cartesiana(arra,prefix = "") {
+    if ( arra.length === 0 ) {
+      yield ""
+    } else {
+      for (let remainder of cartesiana(arra.slice(1),"-")) 
+        for (let head of arra[0])
+          yield prefix + head + remainder;
     }
-    const remainder = arra.length > 2 ? cartesiana([arra.slice(1)]) : arra[1];
-    // dlog(`remainder = ${JSON.stringify(remainder)}`)
-    for (let r of remainder) 
-       for (let h of arra[0])
-         yield h + "-" + r;
+  }
+  const propmap = { l : "left", r : "right", t : "top", b : "bottom"}
+  const propSplit = multiPropSpec.replace(/\s+/g,'').split(',').
+         map(p=>p.split('-').map(x=>x.split('+').map(s=>propmap[s] ?? s)))
+  // dlog(JSON.stringify(propSplit))
+  for ( let arra of propSplit ) {
+    yield* cartesiana(arra)
   }
 }
 
@@ -202,9 +205,7 @@ function* cartesiana(arrallp) {
             // dlog(`stepwise(${value1},${vcount}/${valcount}) = ${stepwise}   for ${prop}  ` + value1 )
           }
           let stepduration = duration
-          const propSplit = prop.replace(/\s+/g,'').split(',').map(p=>p.split('-').map(x=>x.split('+')))
-          // dlog(JSON.stringify(propSplit))
-          for ( sprop of cartesiana(propSplit)) {
+          for ( sprop of multiprops(prop)) {
             if ( /^\s*$/.test(value) ) {
               // dlog(`checking lastval[${sprop}] = ${lastval[sprop]}\n`)
               if ( lastval[sprop] !== undefined ) {
