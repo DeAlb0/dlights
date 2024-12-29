@@ -10,7 +10,7 @@
 <script>
   const animl = `
   1 background-color : blue; height,width:0-->40vh; border-radius:50%
-        0.15 left: 5 x calc(i/9*90vw)->calc((1 - i/9)*90vw) ; top: 0 x 0->calc(i/7*90vh)->calc((1 - i/7)*90vh); background-color: 0 x blue->blue->green->green->red
+        0.15 left: 5 x calc(i/9*80vw)->calc((1 - i/9)*80vw) ; top: 0 x 0->calc(i/7*65vh)->calc((1 - i/7)*65vh); background-color: 0 x blue->blue->green->green->red
   # 1 border-radius: 0 # ;background-color: black
   1 border-radius: -->0;background-color : ->red; height:0px-->70% ;width:0px-->70vw;left: 50%-->15%;top: 50%-->15%;
   2 border-left+right-color: blue; width:70vw-->20vw;border-left+right-width: 0-->30vw; height : 70vh-->100vh; top: 15vh-->0;
@@ -293,6 +293,11 @@ document.addEventListener("click", function() {
     }
     .log { color : white; font-family: 'Courier New', Courier, monospace; }
     body { background-color: black;}
+    @media (min-width: 1920px) {
+    .log {
+        color:darkblue;
+    }
+}
 </style>
 <body>
   <pre class="log"></pre>
