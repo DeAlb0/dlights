@@ -109,19 +109,16 @@
       document.querySelector('.log').innerText += text + "\n"
     }
 
-    function val2arr(text) {
-      let result= []
+    function* multivals(text) {
       for ( value1s of text.split('->')) {
         if ( m = value1s.match(/i\/(\d+)/) ) {
           for ( let i = 0 ; i < parseInt(m[1]) ; i++ ) {
-             result.push(value1s.replace(/\bi\b/,i))
+             yield value1s.replace(/\bi\b/,i)
           }
         } else {
-          result.push(value1s)
+          yield value1s
         }
       }
-      // dlog(`val2arr(${text}) = ${JSON.stringify(result)}`)
-      return result
     }
 
 class specLine {
@@ -187,7 +184,7 @@ function* multiprops(multiPropSpec) {
         let offset = valine.processPattern(/\+([\d.]+)/,0)
         let multi  = valine.processPattern(/(\d+)\s*x/,1)
         let relreltime = reltime + offset
-        let values = val2arr(valine.remainder)
+        let values = [...multivals(valine.remainder)]
         let valcount = values.length
         if ( multi === 0 ) {
           multi = Math.floor(lastcount / valcount)
